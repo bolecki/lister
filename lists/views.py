@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import get_object_or_404, render
 from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
 
@@ -15,3 +15,9 @@ def index(request):
             i = Item(list_text=text)
             i.save()
         return HttpResponseRedirect(reverse('lists:index'))
+
+def vote(request, item_id):
+    item = get_object_or_404(Item, pk=item_id)
+    item.votes += 1
+    item.save()
+    return HttpResponseRedirect(reverse('lists:index'))

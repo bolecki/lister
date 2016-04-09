@@ -7,3 +7,9 @@
 {% else %}
     <p>No items are available.</p>
 {% endif %}
+
+<form action="{% url 'lists:index' %}" method="post">
+{% csrf_token %}
+<input type="text" name="add" id="add" value="" />
+<input type="submit" value="Add" />
+</form>

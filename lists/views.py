@@ -10,6 +10,8 @@ def index(request):
         context = {'items': items}
         return render(request, 'lists/index.html', context)
     elif request.method == 'POST':
-        i = Item(list_text=request.POST['add'])
-        i.save()
+        text = request.POST['add']
+        if text != "":
+            i = Item(list_text=text)
+            i.save()
         return HttpResponseRedirect(reverse('lists:index'))

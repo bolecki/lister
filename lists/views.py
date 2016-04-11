@@ -6,7 +6,7 @@ from .models import Item
 
 def index(request):
     if request.method == 'GET':
-        items = Item.objects.all()
+        items = Item.objects.all().order_by('-votes')
         context = {'items': items}
         return render(request, 'lists/index.html', context)
     elif request.method == 'POST':

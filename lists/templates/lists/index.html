@@ -1,7 +1,7 @@
 {% if items %}
     <ul>
     {% for item in items %}
-        <li>{{ item.votes }} {{ item.list_text }} <form style="display:inline-block" action="{% url 'lists:vote' item.id %}" method="post">{% csrf_token %}<input type=submit value="+"/></form></li>
+        <li><form style="display:inline-block" action="{% url 'lists:vote' item.id %}" method="post">{% csrf_token %}<input type=submit value="+"/></form> {{ item.votes }} {{ item.list_text }}</li>
     {% endfor %}
     </ul>
 {% else %}

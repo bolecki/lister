@@ -16,8 +16,11 @@ def index(request):
             i.save()
         return HttpResponseRedirect(reverse('lists:index'))
 
-def vote(request, item_id):
+def vote(request, item_id, direction):
     item = get_object_or_404(Item, pk=item_id)
-    item.votes += 1
+    if direction == "up":
+        item.votes += 1
+    else:
+        item.votes -= 1
     item.save()
     return HttpResponseRedirect(reverse('lists:index'))

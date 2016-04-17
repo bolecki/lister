@@ -1,14 +1,12 @@
 {% load staticfiles %}
 
 <head>
-    <script src="{% static 'lists/jquery-2.2.3.min.js' %}"></script>
-    <script src="{% static 'lists/js.cookie.js' %}"></script>
 </head>
 
 {% if items %}
     <ul style="list-style:none;">
     {% for item in items %}
-        <li style="line-height:1em;"><form style="display:inline-block" action="{% url 'lists:vote' item.id %}" method="post">{% csrf_token %}<input type=submit value="+"/></form> {{ item.votes }} {{ item.list_text }}</li>
+        <li style="line-height:1em;"><form style="display:inline-block" action="{% url 'lists:vote' item_id=item.id direction='up' %}" method="post">{% csrf_token %}<input type=submit value="+"/></form><form style="display:inline-block" action="{% url 'lists:vote' item_id=item.id direction='down' %}" method="post">{% csrf_token %}<input type=submit value="-"/></form> {{ item.votes }} {{ item.list_text }}</li>
     {% endfor %}
     </ul>
 {% else %}
@@ -20,12 +18,3 @@
 <input type="text" name="add" id="add" value="" />
 <input type="submit" value="Add" />
 </form>
-
-<div id='clicktest' style='background-color:#EEEEEE'>Click</div>
-
-<script>
-  $("#clicktest").click(function() {
-    var csrftoken = Cookies.get('csrftoken');
-    $.post("{% url 'lists:vote' 1 %}", {'csrfmiddlewaretoken': csrftoken});
-  });
-</script>

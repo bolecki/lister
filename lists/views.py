@@ -20,7 +20,7 @@ def vote(request, item_id, action):
     item = get_object_or_404(Item, pk=item_id)
     if action == "up":
         item.votes += 1
-    elif action == "down":
+    elif action == "down" and item.votes > 0:
         item.votes -= 1
 
     if action == "delete":

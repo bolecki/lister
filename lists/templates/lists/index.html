@@ -6,9 +6,9 @@
 </head>
 
 {% if items %}
-    <ul>
+    <ul style="list-style:none;">
     {% for item in items %}
-        <li><form style="display:inline-block" action="{% url 'lists:vote' item.id %}" method="post">{% csrf_token %}<input type=submit value="+"/></form> {{ item.votes }} {{ item.list_text }}</li>
+        <li style="line-height:1em;"><form style="display:inline-block" action="{% url 'lists:vote' item.id %}" method="post">{% csrf_token %}<input type=submit value="+"/></form> {{ item.votes }} {{ item.list_text }}</li>
     {% endfor %}
     </ul>
 {% else %}

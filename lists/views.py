@@ -8,16 +8,21 @@ def index(request):
     if request.method == 'GET':
         items = Item.objects.all().order_by('-votes')
         context = {'items': items}
+
         return render(request, 'lists/index.html', context)
+
     elif request.method == 'POST':
         text = request.POST['add']
+
         if text != "":
-            i = Item(list_text=text)
+            i = Item(item_text=text)
             i.save()
+
         return HttpResponseRedirect(reverse('lists:index'))
 
 def vote(request, item_id, action):
     item = get_object_or_404(Item, pk=item_id)
+
     if action == "up":
         item.votes += 1
     elif action == "down" and item.votes > 0:
@@ -27,4 +32,5 @@ def vote(request, item_id, action):
         item.delete()
     else:
         item.save()
+
     return HttpResponseRedirect(reverse('lists:index'))

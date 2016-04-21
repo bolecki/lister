@@ -3,21 +3,27 @@ from django.http import HttpResponse
 from django.core import serializers
 from django.db.models import Max
 
-from lists.models import Item
+from lists.models import Lister, Item
 
-def index(request):
-    items = Item.objects.all().order_by('-votes')
+def index(request, list_id):
+    lister = Lister.objects.get(pk=list_id)
+    items = lister.item_set.all().order_by('-votes')
     data = serializers.serialize("json", items)
     
     return HttpResponse(data);
 
-def random(request, option):
+def random(request, list_id, option="default"):
+    lister = Lister.objects.get(pk=list_id)
+    items = lister.item_set.all()
+
     if option == "tie":
-        max_votes = Item.objects.all().aggregate(Max('votes'))['votes__max']
-        items = Item.objects.filter(votes=max_votes)
-        item = items.order_by('?').first()
+        max_votes = items.aggregate(Max('votes'))['votes__max']
+        tied = items.filter(votes=max_votes)
+        item = tied.order_by('?').first()
+
         return HttpResponse(item)
+
     else:
-        items = Item.objects.all().order_by('-votes')
         item = items.order_by('?').first()
+
         return HttpResponse(item)

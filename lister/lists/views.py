@@ -26,7 +26,7 @@ def lister(request, list_id):
 
     if request.method == 'GET':
         items = lister.item_set.all().order_by('-votes')
-        context = {'items': items}
+        context = {'items': items, 'list_id': list_id, 'lister': lister.list_name}
 
         return render(request, 'lists/index.html', context)
 
@@ -36,10 +36,10 @@ def lister(request, list_id):
         if text != "":
             lister.item_set.create(item_text=text, votes=0)
 
-        return HttpResponseRedirect(reverse('lists:index'))
+        return HttpResponseRedirect(reverse('lists:lister', args=(list_id,)))
 
 
-def vote(request, item_id, action):
+def vote(request, list_id, item_id, action):
     item = get_object_or_404(Item, pk=item_id)
 
     if action == "up":
@@ -52,4 +52,4 @@ def vote(request, item_id, action):
     else:
         item.save()
 
-    return HttpResponseRedirect(reverse('lists:index'))
+    return HttpResponseRedirect(reverse('lists:lister', args=(list_id,)))

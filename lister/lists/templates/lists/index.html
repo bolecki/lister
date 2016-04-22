@@ -20,3 +20,6 @@
 <input type="text" name="add" id="add" value="" />
 <input type="submit" value="Add" />
 </form>
+
+<a href="{% url 'api:random' list_id=list_id %}">Random</a></br>
+<a href="{% url 'api:random' list_id=list_id option='tie' %}">Tie breaker</a>

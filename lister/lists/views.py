@@ -5,20 +5,10 @@ from django.core.urlresolvers import reverse
 from .models import Lister, Item
 
 def index(request):
-    if request.method == 'GET':
-        items = Item.objects.all().order_by('-votes')
-        context = {'items': items}
+    lists = Lister.objects.all()
+    context = {'lists': lists}
 
-        return render(request, 'lists/login.html', context)
-
-    elif request.method == 'POST':
-        text = request.POST['add']
-
-        if text != "":
-            i = Item(item_text=text)
-            i.save()
-
-        return HttpResponseRedirect(reverse('lists:index'))
+    return render(request, 'lists/login.html', context)
 
 
 def lister(request, list_id):

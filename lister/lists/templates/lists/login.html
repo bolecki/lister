@@ -9,3 +9,15 @@
 <input type="password" name="pass" id="pass" value="" placeholder="Password" /></br>
 <input type="submit" value="Login" />
 </form>
+
+<h1>Public Lists</h1>
+
+{% if lists %}
+    <ul style="list-style:none;">
+    {% for list in lists %}
+        <a href="{% url 'lists:lister' list.id %}">{{ list.list_name }}</a>
+    {% endfor %}
+    </ul>
+{% else %}
+    <p>No lists are available.</p>
+{% endif %}

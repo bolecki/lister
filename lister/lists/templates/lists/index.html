@@ -1,6 +1,7 @@
 {% load staticfiles %}
 
 <head>
+    <script src="{% static 'lists/jquery-1.12.3.min.js' %}"></script>
 </head>
 
 <a href="{% url 'lists:index' %}">Home</a>
@@ -22,5 +23,15 @@
 <input type="submit" value="Add" />
 </form>
 
-<a href="{% url 'api:random' list_id=list_id %}">Random</a></br>
+<div id="random" style="cursor:pointer;float:left;">Random</div><div id="selected" style="float:left;"></div></br>
 <a href="{% url 'api:random' list_id=list_id option='tie' %}">Tie breaker</a>
+
+<script type="text/javascript">
+  $(document).ready(function(){
+    $("#random").click(function(){
+      $.get("{% url 'api:random' list_id=list_id %}", function(data){
+        $("#selected").html("-" + data);
+      });
+    });
+  });
+</script>

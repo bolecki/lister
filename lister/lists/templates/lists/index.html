@@ -23,14 +23,19 @@
 <input type="submit" value="Add" />
 </form>
 
-<a id="random" style="float:left;" href="#">Random</a><div id="selected" style="float:left;padding-left:1em;"></div></br>
-<a href="{% url 'api:random' list_id=list_id option='tie' %}">Tie breaker</a>
+<input type="button" id="random" style="float:left;" value="Random"></input><div id="selected" style="float:left;padding-left:1em;"></div></br>
+<input type="button" id="tie-breaker" style="float:left;" value="Tie Breaker"></input><div id="winner" style="float:left;padding-left:1em;"></div></br>
 
 <script type="text/javascript">
   $(document).ready(function(){
     $("#random").click(function(){
       $.get("{% url 'api:random' list_id=list_id %}", function(data){
         $("#selected").html(data);
+      });
+    });
+    $("#tie-breaker").click(function(){
+      $.get("{% url 'api:random' list_id=list_id option='tie' %}", function(data){
+        $("#winner").html(data);
       });
     });
   });

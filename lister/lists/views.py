@@ -1,14 +1,43 @@
 from django.shortcuts import get_object_or_404, render
 from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
+from django.core.exceptions import ObjectDoesNotExist
+from django.contrib.auth import authenticate
 
+from django.contrib.auth.models import User
 from .models import Lister, Item
 
 def index(request):
     lists = Lister.objects.all()
     context = {'lists': lists}
 
-    return render(request, 'lists/login.html', context)
+    if request.method == 'GET':
+        if not request.user.is_authenticated():
+            return render(request, 'lists/login.html', context)
+
+        else:
+            return render(request, 'lists/home.html')
+
+    elif request.method == 'POST':
+        username = request.POST['user']
+        password = request.POST['pass']
+
+        try:
+            User.objects.get(username=username)
+            user = authenticate(username=username, password=password)
+
+            if user is not None:
+                return render(request, 'lists/home.html')
+
+            else:
+                return render(request, 'lists/login.html', context)
+
+        except ObjectDoesNotExist:
+            user = User.objects.create_user(username, password=password)
+            user.save()
+            user = authenticate(username=username, password=password)
+
+            return render(request, 'lists/home.html')
 
 
 def lister(request, list_id):

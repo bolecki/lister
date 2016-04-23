@@ -23,8 +23,10 @@
 <input type="submit" value="Add" />
 </form>
 
-<input type="button" id="random" style="float:left;" value="Random"></input><div id="selected" style="float:left;padding-left:1em;"></div></br>
-<input type="button" id="tie-breaker" style="float:left;" value="Tie Breaker"></input><div id="winner" style="float:left;padding-left:1em;"></div></br>
+<input type="button" id="random" style="float:left;" value="Random"></input>
+<input type="button" id="tie-breaker" style="float:left;" value="Tie Breaker"></input>
+</br>
+<h1 id="selected"></h1>
 
 <script type="text/javascript">
   $(document).ready(function(){
@@ -35,7 +37,7 @@
     });
     $("#tie-breaker").click(function(){
       $.get("{% url 'api:random' list_id=list_id option='tie' %}", function(data){
-        $("#winner").html(data);
+        $("#selected").html(data);
       });
     });
   });

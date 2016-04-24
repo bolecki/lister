@@ -29,7 +29,7 @@ def index(request):
 
             if user is not None:
                 login(request, user)
-                context = {'username': username}
+                context = {'username': request.user.get_username()}
                 return render(request, 'lists/home.html', context)
 
             else:
@@ -44,7 +44,7 @@ def index(request):
 
             if user is not None:
                 login(request, user)
-                context = {'username': username}
+                context = {'username': request.user.get_username()}
                 return render(request, 'lists/home.html', context)
 
             else:

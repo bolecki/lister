@@ -6,7 +6,7 @@
 
 <body>
     {% if user.is_authenticated %}
-    Welcome {{ user.get_username }}!
+    Welcome {{ user.get_username }}! <a href='{% url 'lists:logout' %}'>Logout</a>
     {% else %}
     <form action="{% url 'lists:index' %}" method="post">
         {% csrf_token %}

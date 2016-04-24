@@ -12,29 +12,23 @@ def index(request):
     context = {'lists': lists}
 
     if request.method == 'GET':
-        if not request.user.is_authenticated():
-            return render(request, 'lists/login.html', context)
-
-        else:
-            context = {'username': request.user.get_username()}
-            return render(request, 'lists/home.html', context)
+        if request.user.is_authenticated():
+            context['user'] = request.user
 
     elif request.method == 'POST':
         username = request.POST['user']
         password = request.POST['pass']
 
+        # Check for existing user and authenticate
         try:
             User.objects.get(username=username)
             user = authenticate(username=username, password=password)
 
             if user is not None:
                 login(request, user)
-                context = {'username': request.user.get_username()}
-                return render(request, 'lists/home.html', context)
+                context['user'] = request.user
 
-            else:
-                return render(request, 'lists/login.html', context)
-
+        # User does not exist, create new
         except ObjectDoesNotExist:
             user = User(username=username)
             user.set_password(password)
@@ -44,11 +38,9 @@ def index(request):
 
             if user is not None:
                 login(request, user)
-                context = {'username': request.user.get_username()}
-                return render(request, 'lists/home.html', context)
+                context['user'] = request.user
 
-            else:
-                return render(request, 'lists/login.html', context)
+    return render(request, 'lists/login.html', context)
 
 
 def lister(request, list_id):

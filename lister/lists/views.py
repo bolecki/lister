@@ -2,7 +2,7 @@ from django.shortcuts import get_object_or_404, render
 from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
 from django.core.exceptions import ObjectDoesNotExist
-from django.contrib.auth import authenticate
+from django.contrib.auth import authenticate, login
 
 from django.contrib.auth.models import User
 from .models import Lister, Item
@@ -16,7 +16,8 @@ def index(request):
             return render(request, 'lists/login.html', context)
 
         else:
-            return render(request, 'lists/home.html')
+            context = {'username': request.user.get_username()}
+            return render(request, 'lists/home.html', context)
 
     elif request.method == 'POST':
         username = request.POST['user']
@@ -27,7 +28,9 @@ def index(request):
             user = authenticate(username=username, password=password)
 
             if user is not None:
-                return render(request, 'lists/home.html')
+                login(request, user)
+                context = {'username': username}
+                return render(request, 'lists/home.html', context)
 
             else:
                 return render(request, 'lists/login.html', context)
@@ -39,7 +42,13 @@ def index(request):
 
             user = authenticate(username=username, password=password)
 
-            return render(request, 'lists/home.html')
+            if user is not None:
+                login(request, user)
+                context = {'username': username}
+                return render(request, 'lists/home.html', context)
+
+            else:
+                return render(request, 'lists/login.html', context)
 
 
 def lister(request, list_id):

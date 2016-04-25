@@ -23,7 +23,7 @@
     {% if lists %}
         <ul style="list-style:none;">
         {% for list in lists %}
-            <a href="{% url 'lists:lister' list.id %}">{{ list.list_name }}</a><br>
+            <a href="{% url 'lists:lister' list.id %}">{{ list.list_name }}</a> - {{ list.user.username }}<br>
         {% endfor %}
         </ul>
     {% else %}

@@ -122,4 +122,4 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
-SERIALIZATION_MODULES = {'filtered-json': 'api.utils'}
+SERIALIZATION_MODULES = {'filtered-json': 'api.filtered_json_serializer'}

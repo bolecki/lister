@@ -14,6 +14,7 @@ def index(request):
     if request.method == 'GET':
         if request.user.is_authenticated():
             context['user'] = request.user
+            context['lists'] = request.user.lister_set.all()
 
     elif request.method == 'POST':
         username = request.POST['user']
@@ -27,6 +28,7 @@ def index(request):
             if user is not None:
                 login(request, user)
                 context['user'] = request.user
+                context['lists'] = request.user.lister_set.all()
 
         # User does not exist, create new
         except ObjectDoesNotExist:
@@ -39,6 +41,7 @@ def index(request):
             if user is not None:
                 login(request, user)
                 context['user'] = request.user
+                context['lists'] = request.user.lister_set.all()
 
     return render(request, 'lists/login.html', context)
 

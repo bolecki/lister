@@ -7,6 +7,8 @@
 <body>
     {% if user.is_authenticated %}
     Welcome {{ user.get_username }}! <a href='{% url 'lists:logout' %}'>Logout</a>
+
+    <h1>Your Lists</h1>
     {% else %}
     <form action="{% url 'lists:index' %}" method="post">
         {% csrf_token %}
@@ -14,9 +16,9 @@
         <input type="password" name="pass" id="pass" value="" placeholder="Password" /><br>
         <input type="submit" value="Login" />
     </form>
-    {% endif %}
 
     <h1>Public Lists</h1>
+    {% endif %}
 
     {% if lists %}
         <ul style="list-style:none;">

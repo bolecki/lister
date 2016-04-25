@@ -1,16 +1,14 @@
 from django.shortcuts import get_object_or_404, render
 from django.http import HttpResponse
-from .utils import FilteredSerializer
+from django.core import serializers
 from django.db.models import Max
 
 from lists.models import Lister, Item
 
-serializer = FilteredSerializer()
-
 def index(request, list_id):
     lister = Lister.objects.get(pk=list_id)
     items = lister.item_set.all().order_by('-votes')
-    data = serializer.serialize(items, fields=('item_text', 'votes'))
+    data = serializers.serialize('filtered-json', items, fields=('item_text', 'votes'))
     
     return HttpResponse(data);
 

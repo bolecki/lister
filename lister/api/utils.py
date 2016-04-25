@@ -1,5 +1,5 @@
-from django.core.serializers.json import Serializer
+from django.core.serializers.json import Serializer as BuiltinSerializer
 
-class FilteredSerializer(Serializer):
+class Serializer(BuiltinSerializer):
     def get_dump_object(self, obj):
         return self._current

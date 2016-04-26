@@ -30,9 +30,13 @@
         <p>No lists are available.</p>
     {% endif %}
 
+    <h2>Create a List</h2>
     <form action="{% url 'lists:create' %}" method="post">
         {% csrf_token %}
-        {{ form.as_p }}
+        <table style="text-align:left;">
+            {{ form.as_table }}
+        </table>
+        <br>
         <input type="submit" value="Submit" />
     </form>
 </body>

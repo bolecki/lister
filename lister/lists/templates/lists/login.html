@@ -29,4 +29,10 @@
     {% else %}
         <p>No lists are available.</p>
     {% endif %}
+
+    <form action="{% url 'lists:create' %}" method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <input type="submit" value="Submit" />
+    </form>
 </body>

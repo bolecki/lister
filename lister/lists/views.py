@@ -4,12 +4,15 @@ from django.core.urlresolvers import reverse
 from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth import authenticate, login, logout
 
+from .forms import CreateListForm
+
 from django.contrib.auth.models import User
 from .models import Lister, Item
 
 def index(request):
     lists = Lister.objects.filter(public=True)
-    context = {'lists': lists}
+    form = CreateListForm()
+    context = {'lists': lists, 'form': form}
 
     if request.method == 'GET':
         if request.user.is_authenticated():
@@ -44,6 +47,32 @@ def index(request):
                 context['lists'] = request.user.lister_set.all()
 
     return render(request, 'lists/login.html', context)
+
+
+def create(request):
+    if request.method == "POST":
+        form = CreateListForm(request.POST)
+
+        if form.is_valid():
+            name = form.cleaned_data['name']
+            public = form.cleaned_data['public']
+
+            lister = Lister(list_name=name, public=public)
+            lister.save()
+
+            return HttpResponseRedirect(reverse('lists:lister', args=(lister.id,)))
+
+        else:
+            form = CreateListForm()
+            context = {'form': form}
+
+            if request.user.is_authenticated():
+                context['user'] = request.user
+                context['lists'] = request.user.lister_set.all()
+            else:
+                context['lists'] = Lister.objects.filter(public=True)
+
+            return render(request, 'lists/login.html', context)
 
 
 def lister(request, list_id):

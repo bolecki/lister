@@ -33,8 +33,6 @@ def index(request):
                 context['user'] = request.user
                 context['lists'] = request.user.lister_set.all()
 
-                return HttpResponseRedirect(reverse('lists:index'))
-
         # User does not exist, create new
         except ObjectDoesNotExist:
             user = User(username=username)
@@ -47,6 +45,8 @@ def index(request):
                 login(request, user)
                 context['user'] = request.user
                 context['lists'] = request.user.lister_set.all()
+
+        return HttpResponseRedirect(reverse('lists:index'))
 
     return render(request, 'lists/login.html', context)
 

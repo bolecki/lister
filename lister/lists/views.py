@@ -11,7 +11,7 @@ from .models import Lister, Item
 
 def index(request):
     lists = Lister.objects.filter(public=True)
-    form = CreateListForm()
+    form = CreateListForm(authenticated=request.user.is_authenticated())
     context = {'lists': lists, 'form': form}
 
     if request.method == 'GET':
@@ -32,6 +32,8 @@ def index(request):
                 login(request, user)
                 context['user'] = request.user
                 context['lists'] = request.user.lister_set.all()
+
+                return HttpResponseRedirect(reverse('lists:index'))
 
         # User does not exist, create new
         except ObjectDoesNotExist:

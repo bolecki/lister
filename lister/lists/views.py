@@ -4,15 +4,20 @@ from django.core.urlresolvers import reverse
 from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth import authenticate, login, logout
 
-from .forms import CreateListForm
+from .forms import CreateListForm, LoginForm
 
 from django.contrib.auth.models import User
 from .models import Lister, Item
 
 def index(request):
     lists = Lister.objects.filter(public=True)
-    form = CreateListForm(authenticated=request.user.is_authenticated())
-    context = {'lists': lists, 'form': form}
+    login_form = LoginForm()
+    list_form = CreateListForm(authenticated=request.user.is_authenticated())
+    context = {
+        'lists': lists,
+        'list_form': list_form,
+        'login_form': login_form
+    }
 
     if request.method == 'GET':
         if request.user.is_authenticated():
@@ -20,33 +25,37 @@ def index(request):
             context['lists'] = request.user.lister_set.all()
 
     elif request.method == 'POST':
-        username = request.POST['user']
-        password = request.POST['pass']
+        login_form = LoginForm(request.POST)
+        context['login_form'] = login_form
 
-        # Check for existing user and authenticate
-        try:
-            User.objects.get(username=username)
-            user = authenticate(username=username, password=password)
+        if login_form.is_valid():
+            username = login_form.cleaned_data['user']
+            password = login_form.cleaned_data['password']
 
-            if user is not None:
-                login(request, user)
-                context['user'] = request.user
-                context['lists'] = request.user.lister_set.all()
+            # Check for existing user and authenticate
+            try:
+                User.objects.get(username=username)
+                user = authenticate(username=username, password=password)
 
-        # User does not exist, create new
-        except ObjectDoesNotExist:
-            user = User(username=username)
-            user.set_password(password)
-            user.save()
+                if user is not None:
+                    login(request, user)
+                    context['user'] = request.user
+                    context['lists'] = request.user.lister_set.all()
 
-            user = authenticate(username=username, password=password)
+            # User does not exist, create new
+            except ObjectDoesNotExist:
+                user = User(username=username)
+                user.set_password(password)
+                user.save()
 
-            if user is not None:
-                login(request, user)
-                context['user'] = request.user
-                context['lists'] = request.user.lister_set.all()
+                user = authenticate(username=username, password=password)
 
-        return HttpResponseRedirect(reverse('lists:index'))
+                if user is not None:
+                    login(request, user)
+                    context['user'] = request.user
+                    context['lists'] = request.user.lister_set.all()
+
+            return HttpResponseRedirect(reverse('lists:index'))
 
     return render(request, 'lists/login.html', context)
 

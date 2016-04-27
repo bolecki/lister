@@ -11,3 +11,7 @@ class CreateListForm(forms.Form):
         if not show_public:
             self.fields['public'].widget = forms.HiddenInput()
             self.fields['public'].initial = True
+
+class LoginForm(forms.Form):
+    user = forms.CharField(label="Username", max_length=30)
+    password = forms.CharField(label="Password", widget=forms.PasswordInput())

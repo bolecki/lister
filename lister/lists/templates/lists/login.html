@@ -12,8 +12,10 @@
     {% else %}
     <form action="{% url 'lists:index' %}" method="post">
         {% csrf_token %}
-        <input type="text" name="user" id="user" value="" placeholder="Username" /><br>
-        <input type="password" name="pass" id="pass" value="" placeholder="Password" /><br>
+        <table style="text-align:left;">
+            {{ login_form.as_table }}
+        </table>
+        <br>
         <input type="submit" value="Login" />
     </form>
 
@@ -34,7 +36,7 @@
     <form action="{% url 'lists:create' %}" method="post">
         {% csrf_token %}
         <table style="text-align:left;">
-            {{ form.as_table }}
+            {{ list_form.as_table }}
         </table>
         <br>
         <input type="submit" value="Submit" />

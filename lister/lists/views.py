@@ -70,17 +70,7 @@ def create(request):
 
             return HttpResponseRedirect(reverse('lists:lister', args=(lister.id,)))
 
-        else:
-            form = CreateListForm()
-            context = {'form': form}
-
-            if request.user.is_authenticated():
-                context['user'] = request.user
-                context['lists'] = request.user.lister_set.all()
-            else:
-                context['lists'] = Lister.objects.filter(public=True)
-
-            return render(request, 'lists/login.html', context)
+    return HttpResponseRedirect(reverse('lists:index'))
 
 
 def lister(request, list_id):

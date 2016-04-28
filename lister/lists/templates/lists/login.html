@@ -10,7 +10,7 @@
 
     <h1>Your Lists</h1>
     {% else %}
-    <form action="{% url 'lists:index' %}" method="post">
+    <form action="{% url 'lists:login' %}" method="post">
         {% csrf_token %}
         <table style="text-align:left;">
             {{ login_form.as_table }}

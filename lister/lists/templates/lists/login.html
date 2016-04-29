@@ -10,17 +10,14 @@
 
     <h1>Your Lists</h1>
     {% else %}
-    <h1>Login</h1>
     <form action="{% url 'lists:login' %}" method="post">
+        <b>Login:</b>
         {% csrf_token %}
-        <table style="text-align:left;">
-            {{ login_form.as_table }}
-        </table>
-        <br>
+        {{ login_form }}
         <input type="submit" value="Login" />
     </form>
 
-    <h1>Public Lists</h1>
+    <h2>Public Lists</h2>
     {% endif %}
 
     {% if lists %}
@@ -33,13 +30,10 @@
         <p>No lists are available.</p>
     {% endif %}
 
-    <h2>Create a List</h2>
-    <form action="{% url 'lists:create' %}" method="post">
+    <form action="{% url 'lists:create' %}" method="post" style="padding-top:3em;">
+        <b>Create a List:</b>
         {% csrf_token %}
-        <table style="text-align:left;">
-            {{ list_form.as_table }}
-        </table>
-        <br>
-        <input type="submit" value="Submit" />
+        {{ list_form }}
+        <input type="submit" value="Add" />
     </form>
 </body>

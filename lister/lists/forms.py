@@ -1,7 +1,7 @@
 from django import forms
 
 class CreateListForm(forms.Form):
-    name = forms.CharField(label='Name', max_length=100)
+    name = forms.CharField(label="", max_length=30, widget=forms.TextInput(attrs={'placeholder': 'Name'}))
     public = forms.BooleanField(required=False)
 
     def __init__(self, *args, **kwargs):
@@ -13,5 +13,5 @@ class CreateListForm(forms.Form):
             self.fields['public'].initial = True
 
 class LoginForm(forms.Form):
-    user = forms.CharField(label="Username", max_length=30)
-    password = forms.CharField(label="Password", widget=forms.PasswordInput())
+    user = forms.CharField(label="", max_length=30, widget=forms.TextInput(attrs={'placeholder': 'Username'}))
+    password = forms.CharField(label="", widget=forms.PasswordInput(attrs={'placeholder': 'Password'}))

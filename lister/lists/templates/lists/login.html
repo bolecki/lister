@@ -18,6 +18,14 @@
         <a href="{% url 'lists:register' %}">Register</a>
     </form>
 
+    {% if messages %}
+    <ul class="messages">
+        {% for message in messages %}
+        <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+
     <h2>Public Lists</h2>
     {% endif %}
 

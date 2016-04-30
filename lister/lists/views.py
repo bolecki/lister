@@ -3,6 +3,7 @@ from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
 from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth import authenticate, login, logout
+from django.contrib import messages
 
 from .forms import CreateListForm, LoginForm
 
@@ -45,7 +46,7 @@ def login_user(request):
 
             # User does not exist
             except ObjectDoesNotExist:
-                pass
+                messages.error(request, 'User does not exist - please use the link to register')
 
     return HttpResponseRedirect(reverse('lists:index'))
 
@@ -76,7 +77,8 @@ def register(request):
 
             # User already taken
             else:
-                pass
+                messages.error(request, 'User already exists - please select another name')
+                return HttpResponseRedirect(reverse('lists:register'))
 
     return HttpResponseRedirect(reverse('lists:index'))
 

@@ -1,3 +1,11 @@
 body {
   font-family:"proxima-nova", helvetica;
 }
+
+.error {
+  color: red;
+}
+
+.messages {
+  list-style:none;
+}

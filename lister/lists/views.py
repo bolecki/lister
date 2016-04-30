@@ -43,6 +43,8 @@ def login_user(request):
 
                 if user is not None:
                     login(request, user)
+                else:
+                    messages.error(request, 'Invalid password')
 
             # User does not exist
             except ObjectDoesNotExist:

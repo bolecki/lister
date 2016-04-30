@@ -15,8 +15,8 @@
         {% csrf_token %}
         {{ login_form }}
         <input type="submit" value="Login" />
+        <a href="{% url 'lists:register' %}">Register</a>
     </form>
-    <a href="{% url 'lists:register' %}">Register</a>
 
     <h2>Public Lists</h2>
     {% endif %}

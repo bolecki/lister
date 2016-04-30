@@ -9,10 +9,20 @@ from .forms import CreateListForm, LoginForm
 
 from django.contrib.auth.models import User
 from .models import Lister, Item
+import sys
 
 def index(request):
     lists = Lister.objects.filter(public=True)
     login_form = LoginForm()
+
+    storage = messages.get_messages(request)
+
+    # Maintain username if login failed
+    for message in storage:
+        if message.extra_tags:
+            if "login_attempt" in message.extra_tags:
+                login_form = LoginForm(login_attempt=message.message)
+
     list_form = CreateListForm(authenticated=request.user.is_authenticated())
     context = {
         'lists': lists,
@@ -44,6 +54,7 @@ def login_user(request):
                 if user is not None:
                     login(request, user)
                 else:
+                    messages.info(request, username, extra_tags='login_attempt')
                     messages.error(request, 'Invalid password')
 
             # User does not exist

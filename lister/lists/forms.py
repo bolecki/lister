@@ -15,3 +15,10 @@ class CreateListForm(forms.Form):
 class LoginForm(forms.Form):
     user = forms.CharField(label="", max_length=30, widget=forms.TextInput(attrs={'placeholder': 'Username'}))
     password = forms.CharField(label="", widget=forms.PasswordInput(attrs={'placeholder': 'Password'}))
+
+    def __init__(self, *args, **kwargs):
+        login_attempt = kwargs.pop('login_attempt', None)
+
+        super(LoginForm, self).__init__(*args, **kwargs)
+        if login_attempt:
+            self.fields['user'].widget.attrs['value'] = login_attempt

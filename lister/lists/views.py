@@ -43,8 +43,28 @@ def login_user(request):
                 if user is not None:
                     login(request, user)
 
-            # User does not exist, create new
+            # User does not exist
             except ObjectDoesNotExist:
+                pass
+
+    return HttpResponseRedirect(reverse('lists:index'))
+
+
+def register(request):
+    if request.method == 'GET':
+        login_form = LoginForm()
+        context = {'login_form': login_form}
+
+        return render(request, 'lists/register.html', context)
+
+    elif request.method == 'POST':
+        login_form = LoginForm(request.POST)
+
+        if login_form.is_valid():
+            username = login_form.cleaned_data['user']
+            password = login_form.cleaned_data['password']
+
+            if User.objects.filter(username=username).count() == 0:
                 user = User(username=username)
                 user.set_password(password)
                 user.save()
@@ -53,6 +73,10 @@ def login_user(request):
 
                 if user is not None:
                     login(request, user)
+
+            # User already taken
+            else:
+                pass
 
     return HttpResponseRedirect(reverse('lists:index'))
 

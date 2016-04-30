@@ -1,0 +1,18 @@
+{% load staticfiles %}
+
+<head>
+    <link rel="stylesheet" type="text/css" href="{% static 'lists/style.css' %}" />
+</head>
+
+<body>
+    <a href="{% url 'lists:index' %}">Home</a><br><br>
+
+    <form action="{% url 'lists:register' %}" method="post">
+        <b>Register:</b>
+        {% csrf_token %}
+        <table>
+            {{ login_form.as_table }}
+        </table>
+        <input type="submit" value="Register" />
+    </form>
+</body>

@@ -16,6 +16,8 @@ def index(request, list_id):
 
     return HttpResponse(data);
 
+@csrf_exempt
+@token_required
 def random(request, list_id, option="default"):
     lister = Lister.objects.get(pk=list_id)
     items = lister.item_set.all()

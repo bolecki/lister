@@ -44,11 +44,13 @@ def token_required(func):
                 if lister.public:
                     return func(request, *args, **kwargs)
 
-        if request.method == 'OPTIONS':
-            return func(request, *args, **kwargs)
+                elif request.user.is_authenticated():
+                    group_name = "lister-{pk}".format(pk=lister.pk)
 
-        if hasattr(request.user, 'auth_token') and request.user.is_authenticated():
-            request.token = request.user.auth_token
+                    if request.user.groups.filter(name=group_name).count() == 1:
+                        return func(request, *args, **kwargs)
+
+        if request.method == 'OPTIONS':
             return func(request, *args, **kwargs)
 
         auth_header = request.META.get('HTTP_AUTHORIZATION', None)

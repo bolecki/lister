@@ -7,7 +7,7 @@ from django.contrib import messages
 
 from .forms import CreateListForm, LoginForm
 
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Group
 from .models import Lister, Item
 
 def index(request):
@@ -103,8 +103,20 @@ def create(request):
             name = form.cleaned_data['name']
             public = form.cleaned_data['public']
 
-            lister = Lister(list_name=name, public=public)
+            user = User.objects.get(username="Anonymous")
+
+            if request.user.is_authenticated():
+                user = request.user
+
+            lister = Lister(list_name=name, public=public, user=user)
             lister.save()
+
+            group_name = "lister-{pk}".format(pk=lister.pk)
+            group = Group(name=group_name)
+            group.save()
+
+            if request.user.is_authenticated():
+                request.user.groups.add(group)
 
             return HttpResponseRedirect(reverse('lists:lister', args=(lister.id,)))
 

@@ -24,6 +24,10 @@ import json
 from django.http import HttpResponse
 from rest_framework.authtoken.models import Token
 
+from lists.models import Lister
+
+import sys
+
 
 def json_response(response_dict, status=200):
     response = HttpResponse(json.dumps(response_dict), content_type="application/json", status=status)
@@ -35,6 +39,15 @@ def json_response(response_dict, status=200):
 
 def token_required(func):
     def inner(request, *args, **kwargs):
+        print >> sys.stderr, kwargs
+
+        if 'list_id' in kwargs:
+            lister = Lister.objects.get(pk=kwargs['list_id'])
+
+            if lister:
+                if lister.public:
+                    return func(request, *args, **kwargs)
+
         if request.method == 'OPTIONS':
             return func(request, *args, **kwargs)
 

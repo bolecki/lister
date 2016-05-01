@@ -9,7 +9,6 @@ from .forms import CreateListForm, LoginForm
 
 from django.contrib.auth.models import User
 from .models import Lister, Item
-import sys
 
 def index(request):
     lists = Lister.objects.filter(public=True)

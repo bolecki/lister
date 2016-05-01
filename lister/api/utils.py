@@ -38,6 +38,10 @@ def token_required(func):
         if request.method == 'OPTIONS':
             return func(request, *args, **kwargs)
 
+        if hasattr(request.user, 'auth_token') and request.user.is_authenticated():
+            request.token = request.user.auth_token
+            return func(request, *args, **kwargs)
+
         auth_header = request.META.get('HTTP_AUTHORIZATION', None)
 
         if auth_header is not None:

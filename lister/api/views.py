@@ -2,14 +2,18 @@ from django.shortcuts import get_object_or_404, render
 from django.http import HttpResponse
 from django.core import serializers
 from django.db.models import Max
+from django.views.decorators.csrf import csrf_exempt
 
+from .utils import token_required
 from lists.models import Lister, Item
 
+@csrf_exempt
+@token_required
 def index(request, list_id):
     lister = Lister.objects.get(pk=list_id)
     items = lister.item_set.all().order_by('-votes')
     data = serializers.serialize('filtered-json', items, fields=('item_text', 'votes'))
-    
+
     return HttpResponse(data);
 
 def random(request, list_id, option="default"):

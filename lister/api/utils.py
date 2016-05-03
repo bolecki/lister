@@ -36,7 +36,7 @@ def json_response(response_dict, status=200):
     return response
 
 
-def token_required(func):
+def auth_required(func):
     def inner(request, *args, **kwargs):
         api = False
 

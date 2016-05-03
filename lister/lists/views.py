@@ -5,6 +5,8 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 
+from api.utils import token_required
+
 from .forms import CreateListForm, LoginForm
 
 from django.contrib.auth.models import User, Group
@@ -123,6 +125,7 @@ def create(request):
     return HttpResponseRedirect(reverse('lists:index'))
 
 
+@token_required
 def lister(request, list_id):
     lister = Lister.objects.get(pk=list_id)
 

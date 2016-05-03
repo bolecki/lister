@@ -21,7 +21,8 @@
 # SOFTWARE.
 
 import json
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseRedirect
+from django.core.urlresolvers import reverse
 from rest_framework.authtoken.models import Token
 
 from lists.models import Lister
@@ -37,6 +38,11 @@ def json_response(response_dict, status=200):
 
 def token_required(func):
     def inner(request, *args, **kwargs):
+        api = False
+
+        if request.path.split("/")[1] == "api":
+            api = True
+
         if 'list_id' in kwargs:
             lister = Lister.objects.get(pk=kwargs['list_id'])
 
@@ -70,8 +76,11 @@ def token_required(func):
                         'error': 'Token not found'
                     }, status=401)
 
-        return json_response({
-            'error': 'Invalid Header'
-        }, status=401)
+        if api:
+            return json_response({
+                'error': 'Invalid Header'
+            }, status=401)
+        else:
+            return HttpResponseRedirect(reverse('lists:index'))
 
     return inner

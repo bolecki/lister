@@ -23,6 +23,7 @@
 import json
 from django.http import HttpResponse, HttpResponseRedirect
 from django.core.urlresolvers import reverse
+from django.contrib import messages
 from rest_framework.authtoken.models import Token
 
 from lists.models import Lister
@@ -81,6 +82,7 @@ def auth_required(func):
                 'error': 'Invalid Header'
             }, status=401)
         else:
+            messages.error(request, 'You are not authorized to access that list')
             return HttpResponseRedirect(reverse('lists:index'))
 
     return inner

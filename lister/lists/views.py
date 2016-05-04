@@ -158,3 +158,7 @@ def vote(request, list_id, item_id, action):
         item.save()
 
     return HttpResponseRedirect(reverse('lists:lister', args=(list_id,)))
+
+
+def api(request):
+    return render(request, 'lists/api.html')

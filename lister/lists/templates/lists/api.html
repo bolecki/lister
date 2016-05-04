@@ -1,0 +1,15 @@
+{% load staticfiles %}
+
+<head>
+    <link rel="stylesheet" type="text/css" href="{% static 'lists/style.css' %}" />
+</head>
+
+<body>
+    <form action="{% url 'api:token' %}" method="post">
+        <b>Get Token:</b><br>
+        {% csrf_token %}
+        <input type="text" name="username" id="username" placeholder="Username"/><br>
+        <input type="password" name="password" id="password" placeholder="Password"/><br>
+        <input type="submit" value="Generate" />
+    </form>
+</body>

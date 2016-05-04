@@ -45,11 +45,5 @@
         {{ list_form }}
         <input type="submit" value="Add" />
     </form>
-    <form action="{% url 'api:token' %}" method="post" style="padding-top:3em;">
-        <b>Get Token:</b>
-        {% csrf_token %}
-        <input type="text" name="username" id="username"/>
-        <input type="password" name="password" id="password"/>
-        <input type="submit" value="Add" />
-    </form>
+    <a href="{% url 'lists:api' %}" style="position:absolute;right:1em;top:1em;">API</a>
 </body>

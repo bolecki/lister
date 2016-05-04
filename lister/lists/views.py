@@ -146,11 +146,19 @@ def lister(request, list_id):
 
 def vote(request, list_id, item_id, action):
     item = get_object_or_404(Item, pk=item_id)
+    lister = Lister.objects.get(pk=list_id)
 
     if action == "up":
         item.votes += 1
+
+        if request.user.is_authenticated() and not lister.public:
+            item.users.add(request.user)
+
     elif action == "down" and item.votes > 0:
         item.votes -= 1
+
+        if request.user.is_authenticated() and not lister.public:
+            item.users.remove(request.user)
 
     if action == "delete":
         item.delete()

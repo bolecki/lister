@@ -14,7 +14,12 @@
         {% endif %}
         <ul style="list-style:none;">
         {% for item in items %}
-            <li style="line-height:1em;"><form style="display:inline-block" action="{% url 'lists:vote' list_id=list_id item_id=item.id action='up' %}" method="post">{% csrf_token %}<input type=submit value="+"/></form><form style="display:inline-block" action="{% url 'lists:vote' list_id=list_id item_id=item.id action='down' %}" method="post">{% csrf_token %}<input type=submit value="-"/></form><form style="display:inline-block" action="{% url 'lists:vote' list_id=list_id item_id=item.id action='delete' %}" method="post">{% csrf_token %}<input type=submit value="x"/></form> {{ item.votes }} {{ item.item_text }}</li>
+            <li style="line-height:1em;">
+                <form style="display:inline-block" action="{% url 'lists:vote' list_id=list_id item_id=item.id action='up' %}" method="post">{% csrf_token %}<input type=submit value="+"/></form>
+                <form style="display:inline-block" action="{% url 'lists:vote' list_id=list_id item_id=item.id action='down' %}" method="post">{% csrf_token %}<input type=submit value="-"/></form>
+                <form style="display:inline-block" action="{% url 'lists:vote' list_id=list_id item_id=item.id action='delete' %}" method="post">{% csrf_token %}<input type=submit value="x"/></form>
+                {{ item.votes }} {{ item.item_text }}
+            </li>
         {% endfor %}
         </ul>
     {% else %}

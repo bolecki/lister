@@ -1,53 +1,181 @@
 {% load staticfiles %}
 
+<!DOCTYPE html>
+<html lang="en">
+
 <head>
-    <link rel="stylesheet" type="text/css" href="{% static 'lists/style.css' %}" />
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>Lister</title>
+
+    <!-- Bootstrap Core CSS -->
+    <link href="{% static 'lists/bootstrap.css' %}" rel="stylesheet">
+
+    <!-- Custom CSS -->
+    <link href="{% static 'lists/sb-admin.css' %}" rel="stylesheet">
+    <link href="{% static 'lists/font/font-awesome/css/font-awesome.min.css' %}" rel="stylesheet">
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
 </head>
 
 <body>
-    {% if user.is_authenticated %}
-    Welcome {{ user.get_username }}! <a href='{% url 'lists:logout' %}'>Logout</a>
 
-    <h1>Your Lists</h1>
-    {% else %}
-    <form action="{% url 'lists:login' %}" method="post">
-        <b>Login:</b>
-        {% csrf_token %}
-        {{ login_form }}
-        <input type="submit" value="Login" />
-        <a href="{% url 'lists:register' %}">Register</a>
-    </form>
+    <div id="wrapper">
 
-    {% if messages %}
-    <ul class="messages">
-        {% for message in messages %}
-        {% if 'error' in message.tags %}<li class="{{ message.tags }}">{{ message }}</li>{% endif %}
-        {% endfor %}
-    </ul>
-    {% endif %}
+        <!-- Navigation -->
+        <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+            <!-- Brand and toggle get grouped for better mobile display -->
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="index.html">Lister</a>
+            </div>
+            <!-- Top Menu Items -->
+            <ul class="nav navbar-right top-nav">
+                {% if user.is_authenticated %}
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-user"></i> {{ user.get_username }} <b class="caret"></b></a>
+                    <ul class="dropdown-menu">
+                        <li>
+                            <a href="{% url 'lists:logout' %}"><i class="fa fa-fw fa-power-off"></i> Log Out</a>
+                        </li>
+                    </ul>
+                </li>
+                {% else %}
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-user"></i> Login <b class="caret"></b></a>
+                    <ul class="dropdown-menu">
+                        <li>
+                            <form action="{% url 'lists:login' %}" method="post">
+                                <b>Login:</b>
+                                {% csrf_token %}
+                                {{ login_form }}
+                                <input type="submit" value="Login" />
+                                <a href="{% url 'lists:register' %}">Register</a>
+                            </form>
+                        </li>
+                    </ul>
+                </li>
+                {% endif %}
+            </ul>
+            <!-- Sidebar Menu Items - These collapse to the responsive navigation menu on small screens -->
+            <div class="collapse navbar-collapse navbar-ex1-collapse">
+                <ul class="nav navbar-nav side-nav">
+                    <li class="active">
+                        <a href="index.html"><i class="fa fa-fw fa-dashboard"></i> Public Lists</a>
+                    </li>
+                    {% if user.is_authenticated %}
+                    <li>
+                        <a href="forms.html"><i class="fa fa-fw fa-edit"></i> Your Lists</a>
+                    </li>
+                    {% endif %}
+                    <li>
+                        <a href="javascript:;" data-toggle="collapse" data-target="#demo"><i class="fa fa-fw fa-arrows-v"></i> Dropdown <i class="fa fa-fw fa-caret-down"></i></a>
+                        <ul id="demo" class="collapse">
+                            <li>
+                                <a href="#">Dropdown Item</a>
+                            </li>
+                            <li>
+                                <a href="#">Dropdown Item</a>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+            <!-- /.navbar-collapse -->
+        </nav>
 
-    <h2>Public Lists</h2>
-    {% endif %}
+        <div id="page-wrapper">
 
-    {% if lists %}
-        <ul style="list-style:none;">
-        {% for list in lists %}
-            <a href="{% url 'lists:lister' list.id %}">{{ list.list_name }}</a>{% if not user.is_authenticated %} - {{ list.user.username }}{% endif %}<br>
-        {% endfor %}
-        </ul>
-    {% else %}
-        <p>No lists are available.</p>
-    {% endif %}
+            <div class="container-fluid">
 
-    <form action="{% url 'lists:create' %}" method="post" style="padding-top:3em;">
-        <b>Create a List:</b>
-        {% csrf_token %}
-        {{ list_form }}
-        <input type="submit" value="Add" />
-    </form>
+                <!-- Page Heading -->
+                <div class="row">
+                    <div class="col-lg-12">
+                        <h1 class="page-header">
+                            Public Lists
+                        </h1>
+                        <ol class="breadcrumb">
+                            <li class="active">
+                                <i class="fa fa-list"></i> Lists
+                            </li>
+                        </ol>
+                    </div>
+                </div>
+                <!-- /.row -->
 
-    <div style="position:absolute;right:1em;top:1em;">
-        <a href="{% url 'lists:api' %}">API</a>
-        <a href="https://github.com/bolecki/lister">Github</a>
+                <div class="row">
+                    <div class="col-lg-3 col-md-6">
+                        <div class="panel panel-primary">
+                            <div class="panel-heading">
+                                <div class="row">
+                                    <div class="col-xs-3">
+                                        <i class="fa fa-comments fa-5x"></i>
+                                    </div>
+                                    <div class="col-xs-9 text-right">
+                                        <div class="huge">26</div>
+                                        <div>New Comments!</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <a href="#">
+                                <div class="panel-footer">
+                                    <span class="pull-left">View Details</span>
+                                    <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
+                                    <div class="clearfix"></div>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <!-- /.row -->
+
+                <div class="page-header">
+                    <h1>List groups</h1>
+                </div>
+                <div class="row">
+                    <div class="col-lg-6">
+                        <div class="list-group">
+                            {% if lists %}
+                                {% for list in lists %}
+                                    <a href="{% url 'lists:lister' list.id %}" class="list-group-item">{{ list.list_name }}<small>{% if not user.is_authenticated %} - {{ list.user.username }}{% endif %}</small></a>
+                                {% endfor %}
+                            {% endif %}
+                        </div>
+                    </div>
+                    <!-- /.col-sm-4 -->
+                </div>
+
+            </div>
+            <!-- /.container-fluid -->
+
+        </div>
+        <!-- /#page-wrapper -->
+
     </div>
+    <!-- /#wrapper -->
+
+    <!-- jQuery -->
+    <script src="{% static 'lists/jquery-1.12.3.min.js' %}"></script>
+
+    <!-- Bootstrap Core JavaScript -->
+    <script src="{% static 'lists/bootstrap.min.js' %}"></script>
+
 </body>
+
+</html>

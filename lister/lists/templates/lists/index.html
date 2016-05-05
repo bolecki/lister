@@ -9,12 +9,9 @@
     <h1>{{ lister }}</h1>
 
     {% if items %}
-        {% if voted %}
-            <h3>You already voted on this list!</h3>
-        {% endif %}
-        <ul style="list-style:none;">
         {% for item in items %}
-            <li style="line-height:1em;">
+            <div style="display:block;width:6em;float:left;">
+                <form style="display:inline-block;padding-right:1em;" action="{% url 'lists:vote' list_id=list_id item_id=item.id action='delete' %}" method="post">{% csrf_token %}<input type=submit value="Delete"/></form>
                 {% if not voted %}
                     <form style="display:inline-block" action="{% url 'lists:vote' list_id=list_id item_id=item.id action='up' %}" method="post">{% csrf_token %}<input type=submit value="+"/></form>
                 {% else %}
@@ -22,11 +19,12 @@
                         <form style="display:inline-block" action="{% url 'lists:vote' list_id=list_id item_id=item.id action='down' %}" method="post">{% csrf_token %}<input type=submit value="-"/></form>
                     {% endif %}
                 {% endif %}
-                <form style="display:inline-block" action="{% url 'lists:vote' list_id=list_id item_id=item.id action='delete' %}" method="post">{% csrf_token %}<input type=submit value="x"/></form>
+            </div>
+            <div style="display:block:">
                 {{ item.votes }} {{ item.item_text }}
-            </li>
+            </div><br>
         {% endfor %}
-        </ul>
+
     {% else %}
         <p>No items are available.</p>
     {% endif %}

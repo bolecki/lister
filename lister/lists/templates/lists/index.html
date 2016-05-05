@@ -11,7 +11,7 @@
     {% if items %}
         {% for item in items %}
             <div style="display:block;width:6em;float:left;">
-                <form style="display:inline-block;padding-right:1em;" action="{% url 'lists:vote' list_id=list_id item_id=item.id action='delete' %}" method="post">{% csrf_token %}<input type=submit value="Delete"/></form>
+                <form class="edit" style="display:inline-block;padding-right:1em;" action="{% url 'lists:vote' list_id=list_id item_id=item.id action='delete' %}" method="post">{% csrf_token %}<input type=submit value="Delete"/></form>
                 {% if not voted %}
                     <form style="display:inline-block" action="{% url 'lists:vote' list_id=list_id item_id=item.id action='up' %}" method="post">{% csrf_token %}<input type=submit value="+"/></form>
                 {% else %}
@@ -29,10 +29,12 @@
         <p>No items are available.</p>
     {% endif %}
 
-    <form action="{% url 'lists:lister' list_id %}" method="post">
-    {% csrf_token %}
-    <input type="text" name="add" id="add" value="" />
-    <input type="submit" value="Add" />
+    <input type="button" id="toggle-edit" value="Edit"/><br><br>
+
+    <form class="edit" action="{% url 'lists:lister' list_id %}" method="post">
+        {% csrf_token %}
+        <input type="text" name="add" id="add" value="" />
+        <input type="submit" value="Add" />
     </form>
 
     <input type="button" id="random" style="float:left;" value="Random"></input>
@@ -43,6 +45,13 @@
     <script src="{% static 'lists/jquery-1.12.3.min.js' %}"></script>
     <script type="text/javascript">
       $(document).ready(function(){
+        $("#toggle-edit").click(function(){
+          if($(".edit").css('visibility') == 'hidden'){
+            $(".edit").css('visibility', 'visible');
+          }else{
+            $(".edit").css('visibility', 'hidden');
+          }
+        });
         $("#random").click(function(){
           $.get("{% url 'api:random' list_id=list_id %}", function(data){
             $("#selected").html(data);

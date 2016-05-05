@@ -18,7 +18,9 @@
                 {% if not voted %}
                     <form style="display:inline-block" action="{% url 'lists:vote' list_id=list_id item_id=item.id action='up' %}" method="post">{% csrf_token %}<input type=submit value="+"/></form>
                 {% else %}
-                    <form style="display:inline-block" action="{% url 'lists:vote' list_id=list_id item_id=item.id action='down' %}" method="post">{% csrf_token %}<input type=submit value="-"/></form>
+                    {% if item.item_text == voted %}
+                        <form style="display:inline-block" action="{% url 'lists:vote' list_id=list_id item_id=item.id action='down' %}" method="post">{% csrf_token %}<input type=submit value="-"/></form>
+                    {% endif %}
                 {% endif %}
                 <form style="display:inline-block" action="{% url 'lists:vote' list_id=list_id item_id=item.id action='delete' %}" method="post">{% csrf_token %}<input type=submit value="x"/></form>
                 {{ item.votes }} {{ item.item_text }}

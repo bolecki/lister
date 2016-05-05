@@ -131,12 +131,12 @@ def lister(request, list_id):
 
     if request.method == 'GET':
         items = lister.item_set.all().order_by('-votes')
-        voted = False
+        voted = None
 
         if request.user.is_authenticated():
             for item in items:
                 if item.users.filter(pk=request.user.pk).exists():
-                    voted = True
+                    voted = item.item_text
 
         context = {
             'items': items,

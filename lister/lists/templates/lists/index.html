@@ -6,22 +6,35 @@
 
 <body>
     <a href="{% url 'lists:index' %}">Home</a>
-    <h1>{{ lister }}</h1>
+    <h1 style="margin-bottom:0px;">{{ lister }}</h1>
+
+    <input type="button" id="toggle-edit" value="Edit"/><br><br>
 
     {% if items %}
-        <ul style="list-style:none;">
         {% for item in items %}
-            <li style="line-height:1em;"><form style="display:inline-block" action="{% url 'lists:vote' list_id=list_id item_id=item.id action='up' %}" method="post">{% csrf_token %}<input type=submit value="+"/></form><form style="display:inline-block" action="{% url 'lists:vote' list_id=list_id item_id=item.id action='down' %}" method="post">{% csrf_token %}<input type=submit value="-"/></form><form style="display:inline-block" action="{% url 'lists:vote' list_id=list_id item_id=item.id action='delete' %}" method="post">{% csrf_token %}<input type=submit value="x"/></form> {{ item.votes }} {{ item.item_text }}</li>
+            <div style="display:block;width:6em;float:left;">
+                <form class="edit" style="display:inline-block;padding-right:1em;" action="{% url 'lists:vote' list_id=list_id item_id=item.id action='delete' %}" method="post">{% csrf_token %}<input type=submit value="Delete"/></form>
+                {% if not voted %}
+                    <form style="display:inline-block" action="{% url 'lists:vote' list_id=list_id item_id=item.id action='up' %}" method="post">{% csrf_token %}<input type=submit value="+"/></form>
+                {% else %}
+                    {% if item.item_text == voted %}
+                        <form style="display:inline-block" action="{% url 'lists:vote' list_id=list_id item_id=item.id action='down' %}" method="post">{% csrf_token %}<input type=submit value="-"/></form>
+                    {% endif %}
+                {% endif %}
+            </div>
+            <div style="display:block:">
+                {{ item.votes }} {{ item.item_text }}
+            </div><br>
         {% endfor %}
-        </ul>
+
     {% else %}
         <p>No items are available.</p>
     {% endif %}
 
-    <form action="{% url 'lists:lister' list_id %}" method="post">
-    {% csrf_token %}
-    <input type="text" name="add" id="add" value="" />
-    <input type="submit" value="Add" />
+    <form class="edit" action="{% url 'lists:lister' list_id %}" method="post">
+        {% csrf_token %}
+        <input type="text" name="add" id="add" value="" />
+        <input type="submit" value="Add" />
     </form>
 
     <input type="button" id="random" style="float:left;" value="Random"></input>
@@ -32,6 +45,13 @@
     <script src="{% static 'lists/jquery-1.12.3.min.js' %}"></script>
     <script type="text/javascript">
       $(document).ready(function(){
+        $("#toggle-edit").click(function(){
+          if($(".edit").css('visibility') == 'hidden'){
+            $(".edit").css('visibility', 'visible');
+          }else{
+            $(".edit").css('visibility', 'hidden');
+          }
+        });
         $("#random").click(function(){
           $.get("{% url 'api:random' list_id=list_id %}", function(data){
             $("#selected").html(data);

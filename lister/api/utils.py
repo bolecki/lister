@@ -21,7 +21,9 @@
 # SOFTWARE.
 
 import json
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseRedirect
+from django.core.urlresolvers import reverse
+from django.contrib import messages
 from rest_framework.authtoken.models import Token
 
 from lists.models import Lister
@@ -35,8 +37,13 @@ def json_response(response_dict, status=200):
     return response
 
 
-def token_required(func):
+def auth_required(func):
     def inner(request, *args, **kwargs):
+        api = False
+
+        if request.path.split("/")[1] == "api":
+            api = True
+
         if 'list_id' in kwargs:
             lister = Lister.objects.get(pk=kwargs['list_id'])
 
@@ -44,11 +51,13 @@ def token_required(func):
                 if lister.public:
                     return func(request, *args, **kwargs)
 
-        if request.method == 'OPTIONS':
-            return func(request, *args, **kwargs)
+                elif request.user.is_authenticated():
+                    group_name = "lister-{pk}".format(pk=lister.pk)
 
-        if hasattr(request.user, 'auth_token') and request.user.is_authenticated():
-            request.token = request.user.auth_token
+                    if request.user.groups.filter(name=group_name).count() == 1:
+                        return func(request, *args, **kwargs)
+
+        if request.method == 'OPTIONS':
             return func(request, *args, **kwargs)
 
         auth_header = request.META.get('HTTP_AUTHORIZATION', None)
@@ -68,8 +77,12 @@ def token_required(func):
                         'error': 'Token not found'
                     }, status=401)
 
-        return json_response({
-            'error': 'Invalid Header'
-        }, status=401)
+        if api:
+            return json_response({
+                'error': 'Invalid Header'
+            }, status=401)
+        else:
+            messages.error(request, 'You are not authorized to access that list')
+            return HttpResponseRedirect(reverse('lists:index'))
 
     return inner

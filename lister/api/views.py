@@ -4,11 +4,11 @@ from django.core import serializers
 from django.db.models import Max
 from django.views.decorators.csrf import csrf_exempt
 
-from .utils import token_required
+from .utils import auth_required
 from lists.models import Lister, Item
 
 @csrf_exempt
-@token_required
+@auth_required
 def index(request, list_id):
     lister = Lister.objects.get(pk=list_id)
     items = lister.item_set.all().order_by('-votes')
@@ -17,7 +17,7 @@ def index(request, list_id):
     return HttpResponse(data);
 
 @csrf_exempt
-@token_required
+@auth_required
 def random(request, list_id, option="default"):
     lister = Lister.objects.get(pk=list_id)
     items = lister.item_set.all()

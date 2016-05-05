@@ -21,6 +21,7 @@ class Item(models.Model):
     lister = models.ForeignKey(Lister, on_delete=models.CASCADE, default=1)
     item_text = models.CharField(max_length=200)
     votes = models.IntegerField(default=0)
+    users = models.ManyToManyField(User)
 
     def __str__(self):
         return self.item_text

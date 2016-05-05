@@ -5,11 +5,12 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 
+from api.utils import auth_required
+
 from .forms import CreateListForm, LoginForm
 
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Group
 from .models import Lister, Item
-import sys
 
 def index(request):
     lists = Lister.objects.filter(public=True)
@@ -104,20 +105,45 @@ def create(request):
             name = form.cleaned_data['name']
             public = form.cleaned_data['public']
 
-            lister = Lister(list_name=name, public=public)
+            user = User.objects.get(username="Anonymous")
+
+            if request.user.is_authenticated():
+                user = request.user
+
+            lister = Lister(list_name=name, public=public, user=user)
             lister.save()
+
+            group_name = "lister-{pk}".format(pk=lister.pk)
+            group = Group(name=group_name)
+            group.save()
+
+            if request.user.is_authenticated():
+                request.user.groups.add(group)
 
             return HttpResponseRedirect(reverse('lists:lister', args=(lister.id,)))
 
     return HttpResponseRedirect(reverse('lists:index'))
 
 
+@auth_required
 def lister(request, list_id):
     lister = Lister.objects.get(pk=list_id)
 
     if request.method == 'GET':
         items = lister.item_set.all().order_by('-votes')
-        context = {'items': items, 'list_id': list_id, 'lister': lister.list_name}
+        voted = None
+
+        if request.user.is_authenticated():
+            for item in items:
+                if item.users.filter(pk=request.user.pk).exists():
+                    voted = item.item_text
+
+        context = {
+            'items': items,
+            'list_id': list_id,
+            'lister': lister.list_name,
+            'voted': voted
+        }
 
         return render(request, 'lists/index.html', context)
 
@@ -132,11 +158,19 @@ def lister(request, list_id):
 
 def vote(request, list_id, item_id, action):
     item = get_object_or_404(Item, pk=item_id)
+    lister = Lister.objects.get(pk=list_id)
 
     if action == "up":
         item.votes += 1
+
+        if request.user.is_authenticated() and not lister.public:
+            item.users.add(request.user)
+
     elif action == "down" and item.votes > 0:
         item.votes -= 1
+
+        if request.user.is_authenticated() and not lister.public:
+            item.users.remove(request.user)
 
     if action == "delete":
         item.delete()
@@ -144,3 +178,7 @@ def vote(request, list_id, item_id, action):
         item.save()
 
     return HttpResponseRedirect(reverse('lists:lister', args=(list_id,)))
+
+
+def api(request):
+    return render(request, 'lists/api.html')

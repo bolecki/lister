@@ -131,7 +131,19 @@ def lister(request, list_id):
 
     if request.method == 'GET':
         items = lister.item_set.all().order_by('-votes')
-        context = {'items': items, 'list_id': list_id, 'lister': lister.list_name}
+        voted = False
+
+        if request.user.is_authenticated():
+            for item in items:
+                if item.users.filter(pk=request.user.pk).exists():
+                    voted = True
+
+        context = {
+            'items': items,
+            'list_id': list_id,
+            'lister': lister.list_name,
+            'voted': voted
+        }
 
         return render(request, 'lists/index.html', context)
 

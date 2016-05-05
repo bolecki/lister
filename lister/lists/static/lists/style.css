@@ -9,3 +9,7 @@ body {
 .messages {
   list-style:none;
 }
+
+.edit {
+  visibility:hidden;
+}

@@ -6,7 +6,9 @@
 
 <body>
     <a href="{% url 'lists:index' %}">Home</a>
-    <h1>{{ lister }}</h1>
+    <h1 style="margin-bottom:0px;">{{ lister }}</h1>
+
+    <input type="button" id="toggle-edit" value="Edit"/><br><br>
 
     {% if items %}
         {% for item in items %}
@@ -28,8 +30,6 @@
     {% else %}
         <p>No items are available.</p>
     {% endif %}
-
-    <input type="button" id="toggle-edit" value="Edit"/><br><br>
 
     <form class="edit" action="{% url 'lists:lister' list_id %}" method="post">
         {% csrf_token %}

@@ -31,10 +31,25 @@ def index(request):
         'login_form': login_form
     }
 
-    if request.method == 'GET':
-        if request.user.is_authenticated():
-            context['user'] = request.user
-            context['lists'] = request.user.lister_set.all()
+    if request.user.is_authenticated():
+        context['user'] = request.user
+
+    return render(request, 'lists/login.html', context)
+
+
+def user_lists(request):
+    if not request.user.is_authenticated():
+        return HttpResponseRedirect(reverse('lists:index'))
+
+    lists = request.user.lister_set.all()
+
+    list_form = CreateListForm(authenticated=request.user.is_authenticated())
+    context = {
+        'lists': lists,
+        'list_form': list_form,
+        'user': request.user,
+        'mine': True
+    }
 
     return render(request, 'lists/login.html', context)
 

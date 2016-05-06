@@ -76,12 +76,12 @@
             <!-- Sidebar Menu Items - These collapse to the responsive navigation menu on small screens -->
             <div class="collapse navbar-collapse navbar-ex1-collapse">
                 <ul class="nav navbar-nav side-nav">
-                    <li class="active">
-                        <a href="index.html"><i class="fa fa-fw fa-dashboard"></i> Public Lists</a>
+                    <li {% if not 'my-lists' in request.path %} class="active"{% endif %}>
+                        <a href="{% url 'lists:index' %}"><i class="fa fa-fw fa-dashboard"></i> Public Lists</a>
                     </li>
                     {% if user.is_authenticated %}
-                    <li>
-                        <a href="forms.html"><i class="fa fa-fw fa-edit"></i> Your Lists</a>
+                    <li {% if 'my-lists' in request.path %} class="active" {% endif %}>
+                        <a href="{% url 'lists:user_lists' %}"><i class="fa fa-fw fa-edit"></i> Your Lists</a>
                     </li>
                     {% endif %}
                 </ul>
@@ -102,7 +102,7 @@
                         <div class="list-group">
                             {% if lists %}
                                 {% for list in lists %}
-                                    <a href="{% url 'lists:lister' list.id %}" class="list-group-item">{{ list.list_name }}<small>{% if not user.is_authenticated %} - {{ list.user.username }}{% endif %}</small></a>
+                                    <a href="{% url 'lists:lister' list.id %}" class="list-group-item">{{ list.list_name }}<small>{% if not 'my-lists' in request.path %} - {{ list.user.username }}{% endif %}</small></a>
                                 {% endfor %}
                             {% endif %}
                         </div>

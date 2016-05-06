@@ -99,6 +99,16 @@
 
             <div class="container-fluid">
 
+                {% if messages %}
+                    {% for message in messages %}
+                        {% if 'error' in message.tags %}
+                            <div class="alert alert-danger alert-dissmissable">
+                                <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                                <strong>Error!</strong> {{ message }}
+                            </div>
+                        {% endif %}
+                    {% endfor %}
+                {% endif %}
 
                 <div class="page-header">
                     {% if not mine %}

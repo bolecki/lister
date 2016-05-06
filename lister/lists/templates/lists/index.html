@@ -120,6 +120,7 @@
                                 {% for item in items %}
                                     <div class="list-group-item">
                                         {{ item.votes }} {{ item.item_text }}
+                                        <form class="edit" style="float:right;" action="{% url 'lists:vote' list_id=list_id item_id=item.id action='delete' %}" method="post">{% csrf_token %}<button class="close" type=submit>&times;</button></form>
                                     </div>
                                 {% endfor %}
                             {% endif %}

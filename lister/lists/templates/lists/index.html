@@ -1,67 +1,163 @@
 {% load staticfiles %}
 
+<!DOCTYPE html>
+<html lang="en">
+
 <head>
-    <link rel="stylesheet" type="text/css" href="{% static 'lists/style.css' %}" />
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>Lister</title>
+
+    <!-- Bootstrap Core CSS -->
+    <link href="{% static 'lists/bootstrap.css' %}" rel="stylesheet">
+
+    <!-- Custom CSS -->
+    <link href="{% static 'lists/sb-admin.css' %}" rel="stylesheet">
+    <link href="{% static 'lists/font/font-awesome/css/font-awesome.min.css' %}" rel="stylesheet">
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
 </head>
 
 <body>
-    <a href="{% url 'lists:index' %}">Home</a>
-    <h1 style="margin-bottom:0px;">{{ lister }}</h1>
 
-    <input type="button" id="toggle-edit" value="Edit"/><br><br>
+    <div id="wrapper">
 
-    {% if items %}
-        {% for item in items %}
-            <div style="display:block;width:6em;float:left;">
-                <form class="edit" style="display:inline-block;padding-right:1em;" action="{% url 'lists:vote' list_id=list_id item_id=item.id action='delete' %}" method="post">{% csrf_token %}<input type=submit value="Delete"/></form>
-                {% if not voted %}
-                    <form style="display:inline-block" action="{% url 'lists:vote' list_id=list_id item_id=item.id action='up' %}" method="post">{% csrf_token %}<input type=submit value="+"/></form>
-                {% else %}
-                    {% if item.item_text == voted %}
-                        <form style="display:inline-block" action="{% url 'lists:vote' list_id=list_id item_id=item.id action='down' %}" method="post">{% csrf_token %}<input type=submit value="-"/></form>
-                    {% endif %}
-                {% endif %}
+        <!-- Navigation -->
+        <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+            <!-- Brand and toggle get grouped for better mobile display -->
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="index.html">Lister</a>
             </div>
-            <div style="display:block:">
-                {{ item.votes }} {{ item.item_text }}
-            </div><br>
-        {% endfor %}
+            <!-- Top Menu Items -->
+            <ul class="nav navbar-right top-nav">
+                <li>
+                    <a href="{% url 'lists:api' %}"><i class="fa fa-code"></i> API </a>
+                </li>
+                <li>
+                    <a href="https://github.com/bolecki/lister"><i class="fa fa-github"></i> Github </a>
+                </li>
+                {% if user.is_authenticated %}
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-user"></i> {{ user.get_username }} <b class="caret"></b></a>
+                    <ul class="dropdown-menu">
+                        <li>
+                            <a href="{% url 'lists:logout' %}"><i class="fa fa-fw fa-power-off"></i> Log Out</a>
+                        </li>
+                    </ul>
+                </li>
+                {% else %}
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-user"></i> Login <b class="caret"></b></a>
+                    <ul class="dropdown-menu">
+                        <li>
+                            <form action="{% url 'lists:login' %}" method="post">
+                                <b>Login:</b>
+                                {% csrf_token %}
+                                {{ login_form }}
+                                <input type="submit" value="Login" />
+                                <a href="{% url 'lists:register' %}">Register</a>
+                            </form>
+                        </li>
+                    </ul>
+                </li>
+                {% endif %}
+            </ul>
+            <!-- Sidebar Menu Items - These collapse to the responsive navigation menu on small screens -->
+            <div class="collapse navbar-collapse navbar-ex1-collapse">
+                <ul class="nav navbar-nav side-nav">
+                    <li>
+                        <a href="{% url 'lists:index' %}"><i class="fa fa-fw fa-dashboard"></i> Public Lists</a>
+                    </li>
+                    {% if user.is_authenticated %}
+                    <li>
+                        <a href="{% url 'lists:user_lists' %}"><i class="fa fa-fw fa-edit"></i> Your Lists</a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </div>
+            <!-- /.navbar-collapse -->
+        </nav>
 
-    {% else %}
-        <p>No items are available.</p>
-    {% endif %}
+        <div id="page-wrapper">
 
-    <form class="edit" action="{% url 'lists:lister' list_id %}" method="post">
-        {% csrf_token %}
-        <input type="text" name="add" id="add" value="" />
-        <input type="submit" value="Add" />
-    </form>
+            <div class="container-fluid">
 
-    <input type="button" id="random" style="float:left;" value="Random"></input>
-    <input type="button" id="tie-breaker" style="float:left;" value="Tie Breaker"></input>
-    <br>
-    <h1 id="selected"></h1>
+                {% if messages %}
+                    {% for message in messages %}
+                        {% if 'error' in message.tags %}
+                            <div class="alert alert-danger alert-dissmissable">
+                                <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                                <strong>Error!</strong> {{ message }}
+                            </div>
+                        {% endif %}
+                    {% endfor %}
+                {% endif %}
 
+                <div class="page-header">
+                    <h1>{{ lister }}</h1>
+                </div>
+                <div class="row">
+                    <div class="col-lg-6">
+                        <div class="list-group">
+                            {% if items %}
+                                {% for item in items %}
+                                    <div class="list-group-item">
+                                        {{ item.votes }} {{ item.item_text }}
+                                    </div>
+                                {% endfor %}
+                            {% endif %}
+                        </div>
+                    </div>
+                    <!-- /.col-sm-4 -->
+                    <div class="col-lg-3 col-md-6">
+                        <div class="panel panel-primary">
+                            <div class="panel-heading">
+                                <div class="row">
+                                    <div class="col-xs-3">
+                                        <i class="fa fa-list fa-5x"></i>
+                                    </div>
+                                    <div class="col-xs-9 text-right">
+                                        <div class="huge">{{ items|length }}</div>
+                                        <div>Items</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <!-- /.container-fluid -->
+
+        </div>
+        <!-- /#page-wrapper -->
+
+    </div>
+    <!-- /#wrapper -->
+
+    <!-- jQuery -->
     <script src="{% static 'lists/jquery-1.12.3.min.js' %}"></script>
-    <script type="text/javascript">
-      $(document).ready(function(){
-        $("#toggle-edit").click(function(){
-          if($(".edit").css('visibility') == 'hidden'){
-            $(".edit").css('visibility', 'visible');
-          }else{
-            $(".edit").css('visibility', 'hidden');
-          }
-        });
-        $("#random").click(function(){
-          $.get("{% url 'api:random' list_id=list_id %}", function(data){
-            $("#selected").html(data);
-          });
-        });
-        $("#tie-breaker").click(function(){
-          $.get("{% url 'api:random' list_id=list_id option='tie' %}", function(data){
-            $("#selected").html(data);
-          });
-        });
-      });
-    </script>
+
+    <!-- Bootstrap Core JavaScript -->
+    <script src="{% static 'lists/bootstrap.min.js' %}"></script>
+
 </body>
+
+</html>

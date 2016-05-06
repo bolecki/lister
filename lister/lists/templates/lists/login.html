@@ -47,6 +47,12 @@
             </div>
             <!-- Top Menu Items -->
             <ul class="nav navbar-right top-nav">
+                <li>
+                    <a href="{% url 'lists:api' %}"><i class="fa fa-code"></i> API </a>
+                </li>
+                <li>
+                    <a href="https://github.com/bolecki/lister"><i class="fa fa-github"></i> Github </a>
+                </li>
                 {% if user.is_authenticated %}
                 <li class="dropdown">
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-user"></i> {{ user.get_username }} <b class="caret"></b></a>

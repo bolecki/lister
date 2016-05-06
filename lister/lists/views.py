@@ -69,9 +69,13 @@ def login_user(request):
 
                 if user is not None:
                     login(request, user)
+
+                    return HttpResponseRedirect(reverse('lists:user_lists'))
+
                 else:
                     messages.info(request, username, extra_tags='login_attempt')
                     messages.error(request, 'Invalid password')
+
 
             # User does not exist
             except ObjectDoesNotExist:

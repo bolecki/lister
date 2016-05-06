@@ -20,6 +20,8 @@
     <link href="{% static 'lists/sb-admin.css' %}" rel="stylesheet">
     <link href="{% static 'lists/font/font-awesome/css/font-awesome.min.css' %}" rel="stylesheet">
 
+    <link href="{% static 'lists/style.css' %}" rel="stylesheet">
+
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
     <!--[if lt IE 9]>
@@ -111,7 +113,7 @@
                 {% endif %}
 
                 <div class="page-header">
-                    <h1>{{ lister }}</h1>
+                    <h1>{{ lister }}   <button class="btn btn-xs btn-warning" type="button" id="toggle-edit">Edit</button></h1>
                 </div>
                 <div class="row">
                     <div class="col-lg-6">
@@ -154,6 +156,12 @@
             </div>
             <!-- /.container-fluid -->
 
+            <form class="edit" action="{% url 'lists:lister' list_id %}" method="post">
+                {% csrf_token %}
+                <input type="text" name="add" id="add" value="" />
+                <button class="btn btn-xs btn-primary" type="submit">Add</button>
+            </form>
+
         </div>
         <!-- /#page-wrapper -->
 
@@ -165,6 +173,28 @@
 
     <!-- Bootstrap Core JavaScript -->
     <script src="{% static 'lists/bootstrap.min.js' %}"></script>
+
+    <script type="text/javascript">
+      $(document).ready(function(){
+        $("#toggle-edit").click(function(){
+          if($(".edit").css('visibility') == 'hidden'){
+            $(".edit").css('visibility', 'visible');
+          }else{
+            $(".edit").css('visibility', 'hidden');
+          }
+        });
+        $("#random").click(function(){
+          $.get("{% url 'api:random' list_id=list_id %}", function(data){
+            $("#selected").html(data);
+          });
+        });
+        $("#tie-breaker").click(function(){
+          $.get("{% url 'api:random' list_id=list_id option='tie' %}", function(data){
+            $("#selected").html(data);
+          });
+        });
+      });
+    </script>
 
 </body>
 

@@ -101,7 +101,11 @@
 
 
                 <div class="page-header">
+                    {% if not mine %}
                     <h1>Public Lists</h1>
+                    {% else %}
+                    <h1>Your Lists</h1>
+                    {% endif %}
                 </div>
                 <div class="row">
                     <div class="col-lg-6">

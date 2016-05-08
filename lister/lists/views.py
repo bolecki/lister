@@ -185,6 +185,7 @@ def lister(request, list_id):
                 if item.users.filter(pk=request.user.pk).exists():
                     voted = item.item_text
 
+        login_form = LoginForm()
         grant_form = GrantForm()
 
         mine = False
@@ -195,6 +196,7 @@ def lister(request, list_id):
         context = {
             'items': items,
             'list_id': list_id,
+            'login_form': login_form,
             'grant_form': grant_form,
             'lister': lister.list_name,
             'voted': voted,

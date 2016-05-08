@@ -2,7 +2,7 @@ from django import forms
 
 class CreateListForm(forms.Form):
     name = forms.CharField(label="", max_length=30, widget=forms.TextInput(attrs={'placeholder': 'Name', 'class': 'form-control'}))
-    public = forms.BooleanField(required=False)
+    public = forms.BooleanField(required=False, widget=forms.CheckboxInput(attrs={'class': 'checkbox'}))
 
     def __init__(self, *args, **kwargs):
         show_public = kwargs.pop('authenticated', False)

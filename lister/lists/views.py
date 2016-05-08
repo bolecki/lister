@@ -7,7 +7,7 @@ from django.contrib import messages
 
 from api.utils import auth_required
 
-from .forms import CreateListForm, LoginForm
+from .forms import CreateListForm, LoginForm, GrantForm
 
 from django.contrib.auth.models import User, Group
 from .models import Lister, Item
@@ -145,6 +145,30 @@ def create(request):
 
 
 @auth_required
+def grant(request, list_id):
+    lister = Lister.objects.get(pk=list_id)
+
+    if request.method == "POST":
+        form = GrantForm(request.POST)
+
+        if form.is_valid():
+            users_text = form.cleaned_data['users']
+            users_list = users_text.split(",")
+
+            group_name = "lister-{pk}".format(pk=lister.pk)
+            group = Group.objects.get(name=group_name)
+
+            for username in users_list:
+                try:
+                    user = User.objects.get(username=username.strip())
+                    user.groups.add(group)
+                except ObjectDoesNotExist:
+                    messages.error(request, '{user} does not exist!'.format(user=username))
+
+    return HttpResponseRedirect(reverse('lists:lister', args=(lister.id,)))
+
+
+@auth_required
 def lister(request, list_id):
     lister = Lister.objects.get(pk=list_id)
 
@@ -157,11 +181,20 @@ def lister(request, list_id):
                 if item.users.filter(pk=request.user.pk).exists():
                     voted = item.item_text
 
+        grant_form = GrantForm()
+
+        mine = False
+
+        if request.user == lister.user:
+            mine = True
+
         context = {
             'items': items,
             'list_id': list_id,
+            'grant_form': grant_form,
             'lister': lister.list_name,
-            'voted': voted
+            'voted': voted,
+            'mine': mine
         }
 
         return render(request, 'lists/index.html', context)

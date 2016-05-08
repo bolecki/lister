@@ -173,6 +173,23 @@
                     </div>
                 </div>
 
+                {% if mine %}
+                <div class="row">
+                    <div class="col-sm-3">
+                        <form role="form" class="edit" action="{% url 'lists:grant' list_id %}" method="post">
+                            <b>Grant Users Access:</b>
+                            <div class="form-group">
+                                {% csrf_token %}
+                                {{ grant_form }}
+                            </div>
+                            <div class="form-group">
+                                <button type="submit" class="btn btn-sm btn-primary">Grant</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                {% endif %}
+
             </div>
             <!-- /.container-fluid -->
 

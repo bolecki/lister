@@ -12,6 +12,7 @@ class CreateListForm(forms.Form):
             self.fields['public'].widget = forms.HiddenInput()
             self.fields['public'].initial = True
 
+
 class LoginForm(forms.Form):
     user = forms.CharField(label="", max_length=30, widget=forms.TextInput(attrs={'placeholder': 'Username', 'class': 'form-control'}))
     password = forms.CharField(label="", widget=forms.PasswordInput(attrs={'placeholder': 'Password', 'class': 'form-control'}))
@@ -22,3 +23,7 @@ class LoginForm(forms.Form):
         super(LoginForm, self).__init__(*args, **kwargs)
         if login_attempt:
             self.fields['user'].widget.attrs['value'] = login_attempt
+
+
+class GrantForm(forms.Form):
+    users = forms.CharField(max_length=100, widget=forms.TextInput(attrs={'placeholder': 'John,Jane.Frank', 'class': 'form-control'}))

@@ -69,13 +69,17 @@
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-user"></i> Login <b class="caret"></b></a>
                     <ul class="dropdown-menu">
                         <li>
-                            <form action="{% url 'lists:login' %}" method="post">
-                                <b>Login:</b>
-                                {% csrf_token %}
-                                {{ login_form }}
-                                <input type="submit" value="Login" />
-                                <a href="{% url 'lists:register' %}">Register</a>
-                            </form>
+                            <div class="col-lg-12">
+                                <form role="form" action="{% url 'lists:login' %}" method="post">
+                                    <div class="form-group">
+                                        <b>Login:</b>
+                                        {% csrf_token %}
+                                        {{ login_form }}
+                                        <button type="submit" class="btn btn-sm btn-primary">Login</button>
+                                        <a href="{% url 'lists:register' %}">Register</a>
+                                    </div>
+                                </form>
+                            </div>
                         </li>
                     </ul>
                 </li>

@@ -212,6 +212,7 @@ def lister(request, list_id):
         return HttpResponseRedirect(reverse('lists:lister', args=(list_id,)))
 
 
+@auth_required
 def vote(request, list_id, item_id, action):
     item = get_object_or_404(Item, pk=item_id)
     lister = Lister.objects.get(pk=list_id)

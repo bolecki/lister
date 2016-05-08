@@ -113,6 +113,10 @@ def register(request):
                 messages.error(request, 'User already exists - please select another name')
                 return HttpResponseRedirect(reverse('lists:register'))
 
+        else:
+            context = {'login_form': login_form}
+            return render(request, 'lists/register.html', context)
+
     return HttpResponseRedirect(reverse('lists:index'))
 
 

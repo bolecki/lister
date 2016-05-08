@@ -1,4 +1,10 @@
 from django import forms
+from django.core import exceptions
+from django.utils.translation import ugettext_lazy as _
+
+def validate_username(username):
+    if ',' in username:
+        raise exceptions.ValidationError(_('No comma in username'))
 
 class CreateListForm(forms.Form):
     name = forms.CharField(label="", max_length=30, widget=forms.TextInput(attrs={'placeholder': 'Name', 'class': 'form-control'}))
@@ -14,7 +20,7 @@ class CreateListForm(forms.Form):
 
 
 class LoginForm(forms.Form):
-    user = forms.CharField(label="", max_length=30, widget=forms.TextInput(attrs={'placeholder': 'Username', 'class': 'form-control'}))
+    user = forms.CharField(label="", max_length=30, validators=[validate_username], widget=forms.TextInput(attrs={'placeholder': 'Username', 'class': 'form-control'}))
     password = forms.CharField(label="", widget=forms.PasswordInput(attrs={'placeholder': 'Password', 'class': 'form-control'}))
 
     def __init__(self, *args, **kwargs):

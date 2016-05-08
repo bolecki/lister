@@ -1,185 +1,56 @@
-{% load staticfiles %}
+{% extends 'lists/base.html' %}
 
-<!DOCTYPE html>
-<html lang="en">
+{% block title %}Lister{% endblock %}
 
-<head>
-
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="">
-    <meta name="author" content="">
-
-    <title>Lister</title>
-
-    <!-- Bootstrap Core CSS -->
-    <link href="{% static 'lists/bootstrap.css' %}" rel="stylesheet">
-
-    <!-- Custom CSS -->
-    <link href="{% static 'lists/sb-admin.css' %}" rel="stylesheet">
-    <link href="{% static 'lists/font/font-awesome/css/font-awesome.min.css' %}" rel="stylesheet">
-
-    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
-    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
-    <!--[if lt IE 9]>
-        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
-        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
-    <![endif]-->
-
-</head>
-
-<body>
-
-    <div id="wrapper">
-
-        <!-- Navigation -->
-        <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
-            <!-- Brand and toggle get grouped for better mobile display -->
-            <div class="navbar-header">
-                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
-                    <span class="sr-only">Toggle navigation</span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                </button>
-                <a class="navbar-brand" href="{% url 'lists:index' %}">Lister</a>
-            </div>
-            <!-- Top Menu Items -->
-            <ul class="nav navbar-right top-nav">
-                <li>
-                    <a href="{% url 'lists:api' %}"><i class="fa fa-code"></i> API </a>
-                </li>
-                <li>
-                    <a href="https://github.com/bolecki/lister"><i class="fa fa-github"></i> Github </a>
-                </li>
-                {% if user.is_authenticated %}
-                <li class="dropdown">
-                    <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-user"></i> {{ user.get_username }} <b class="caret"></b></a>
-                    <ul class="dropdown-menu">
-                        <li>
-                            <a href="{% url 'lists:logout' %}"><i class="fa fa-fw fa-power-off"></i> Log Out</a>
-                        </li>
-                    </ul>
-                </li>
-                {% else %}
-                <li class="dropdown">
-                    <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-user"></i> Login <b class="caret"></b></a>
-                    <ul class="dropdown-menu">
-                        <li>
-                            <div class="col-lg-12">
-                                <form role="form" action="{% url 'lists:login' %}" method="post">
-                                    <div class="form-group">
-                                        <b>Login:</b>
-                                        {% csrf_token %}
-                                        {{ login_form }}
-                                        <button type="submit" class="btn btn-sm btn-primary">Login</button>
-                                        <a href="{% url 'lists:register' %}">Register</a>
-                                    </div>
-                                </form>
-                            </div>
-                        </li>
-                    </ul>
-                </li>
-                {% endif %}
-            </ul>
-            <!-- Sidebar Menu Items - These collapse to the responsive navigation menu on small screens -->
-            <div class="collapse navbar-collapse navbar-ex1-collapse">
-                <ul class="nav navbar-nav side-nav">
-                    <li {% if not mine %} class="active"{% endif %}>
-                        <a href="{% url 'lists:index' %}"><i class="fa fa-fw fa-dashboard"></i> Public Lists</a>
-                    </li>
-                    {% if user.is_authenticated %}
-                    <li {% if mine %} class="active" {% endif %}>
-                        <a href="{% url 'lists:user_lists' %}"><i class="fa fa-fw fa-edit"></i> Your Lists</a>
-                    </li>
-                    {% endif %}
-                </ul>
-            </div>
-            <!-- /.navbar-collapse -->
-        </nav>
-
-        <div id="page-wrapper">
-
-            <div class="container-fluid">
-
-                {% if messages %}
-                    {% for message in messages %}
-                        {% if 'error' in message.tags %}
-                            <div class="alert alert-danger alert-dissmissable">
-                                <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
-                                <strong>Error!</strong> {{ message }}
-                            </div>
-                        {% endif %}
-                    {% endfor %}
-                {% endif %}
-
-                <div class="page-header">
-                    {% if not mine %}
-                    <h1>Public Lists</h1>
-                    {% else %}
-                    <h1>Your Lists</h1>
-                    {% endif %}
-                </div>
-                <div class="row">
-                    <div class="col-lg-6">
-                        <div class="list-group">
-                            {% if lists %}
-                                {% for list in lists %}
-                                    <a href="{% url 'lists:lister' list.id %}" class="list-group-item">{{ list.list_name }}<small>{% if not mine %} - {{ list.user.username }}{% endif %}</small></a>
-                                {% endfor %}
-                            {% endif %}
-                        </div>
-                    </div>
-                    <!-- /.col-sm-4 -->
-                    <div class="col-lg-3 col-md-6"></div>
-                    <div class="col-lg-3 col-md-6">
-                        <div class="panel panel-primary">
-                            <div class="panel-heading">
-                                <div class="row">
-                                    <div class="col-xs-3">
-                                        <i class="fa fa-list fa-5x"></i>
-                                    </div>
-                                    <div class="col-xs-9 text-right">
-                                        <div class="huge">{{ lists|length }}</div>
-                                        <div>Lists</div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="row">
-                    <div class="col-sm-3">
-                        <form role="form" action="{% url 'lists:create' %}" method="post">
-                            <div class="form-group">
-                                <b>New List:</b>
-                                {% csrf_token %}
-                                {{ list_form }}
-                            </div>
-                            <div class="form-group">
-                                <button type="submit" class="btn btn-sm btn-primary">Create</button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-
-            </div>
-            <!-- /.container-fluid -->
-
+{% block content %}
+<div class="page-header">
+    {% if not mine %}
+    <h1>Public Lists</h1>
+    {% else %}
+    <h1>Your Lists</h1>
+    {% endif %}
+</div>
+<div class="row">
+    <div class="col-lg-6">
+        <div class="list-group">
+            {% if lists %}
+                {% for list in lists %}
+                    <a href="{% url 'lists:lister' list.id %}" class="list-group-item">{{ list.list_name }}<small>{% if not mine %} - {{ list.user.username }}{% endif %}</small></a>
+                {% endfor %}
+            {% endif %}
         </div>
-        <!-- /#page-wrapper -->
-
     </div>
-    <!-- /#wrapper -->
+    <!-- /.col-sm-4 -->
+    <div class="col-lg-3 col-md-6"></div>
+    <div class="col-lg-3 col-md-6">
+        <div class="panel panel-primary">
+            <div class="panel-heading">
+                <div class="row">
+                    <div class="col-xs-3">
+                        <i class="fa fa-list fa-5x"></i>
+                    </div>
+                    <div class="col-xs-9 text-right">
+                        <div class="huge">{{ lists|length }}</div>
+                        <div>Lists</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
-    <!-- jQuery -->
-    <script src="{% static 'lists/jquery-1.12.3.min.js' %}"></script>
-
-    <!-- Bootstrap Core JavaScript -->
-    <script src="{% static 'lists/bootstrap.min.js' %}"></script>
-
-</body>
-
-</html>
+<div class="row">
+    <div class="col-sm-3">
+        <form role="form" action="{% url 'lists:create' %}" method="post">
+            <div class="form-group">
+                <b>New List:</b>
+                {% csrf_token %}
+                {{ list_form }}
+            </div>
+            <div class="form-group">
+                <button type="submit" class="btn btn-sm btn-primary">Create</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

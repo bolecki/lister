@@ -7,7 +7,7 @@ from django.contrib import messages
 
 from api.utils import auth_required
 
-from .forms import CreateListForm, LoginForm
+from .forms import CreateListForm, LoginForm, GrantForm
 
 from django.contrib.auth.models import User, Group
 from .models import Lister, Item
@@ -31,10 +31,25 @@ def index(request):
         'login_form': login_form
     }
 
-    if request.method == 'GET':
-        if request.user.is_authenticated():
-            context['user'] = request.user
-            context['lists'] = request.user.lister_set.all()
+    if request.user.is_authenticated():
+        context['user'] = request.user
+
+    return render(request, 'lists/login.html', context)
+
+
+def user_lists(request):
+    if not request.user.is_authenticated():
+        return HttpResponseRedirect(reverse('lists:index'))
+
+    lists = request.user.lister_set.all()
+
+    list_form = CreateListForm(authenticated=request.user.is_authenticated())
+    context = {
+        'lists': lists,
+        'list_form': list_form,
+        'user': request.user,
+        'mine': True
+    }
 
     return render(request, 'lists/login.html', context)
 
@@ -54,9 +69,13 @@ def login_user(request):
 
                 if user is not None:
                     login(request, user)
+
+                    return HttpResponseRedirect(reverse('lists:user_lists'))
+
                 else:
                     messages.info(request, username, extra_tags='login_attempt')
                     messages.error(request, 'Invalid password')
+
 
             # User does not exist
             except ObjectDoesNotExist:
@@ -94,6 +113,10 @@ def register(request):
                 messages.error(request, 'User already exists - please select another name')
                 return HttpResponseRedirect(reverse('lists:register'))
 
+        else:
+            context = {'login_form': login_form}
+            return render(request, 'lists/register.html', context)
+
     return HttpResponseRedirect(reverse('lists:index'))
 
 
@@ -126,6 +149,30 @@ def create(request):
 
 
 @auth_required
+def grant(request, list_id):
+    lister = Lister.objects.get(pk=list_id)
+
+    if request.method == "POST":
+        form = GrantForm(request.POST)
+
+        if form.is_valid():
+            users_text = form.cleaned_data['users']
+            users_list = users_text.split(",")
+
+            group_name = "lister-{pk}".format(pk=lister.pk)
+            group = Group.objects.get(name=group_name)
+
+            for username in users_list:
+                try:
+                    user = User.objects.get(username=username.strip())
+                    user.groups.add(group)
+                except ObjectDoesNotExist:
+                    messages.error(request, '{user} does not exist!'.format(user=username))
+
+    return HttpResponseRedirect(reverse('lists:lister', args=(lister.id,)))
+
+
+@auth_required
 def lister(request, list_id):
     lister = Lister.objects.get(pk=list_id)
 
@@ -138,11 +185,22 @@ def lister(request, list_id):
                 if item.users.filter(pk=request.user.pk).exists():
                     voted = item.item_text
 
+        login_form = LoginForm()
+        grant_form = GrantForm()
+
+        mine = False
+
+        if request.user == lister.user:
+            mine = True
+
         context = {
             'items': items,
             'list_id': list_id,
+            'login_form': login_form,
+            'grant_form': grant_form,
             'lister': lister.list_name,
-            'voted': voted
+            'voted': voted,
+            'mine': mine
         }
 
         return render(request, 'lists/index.html', context)
@@ -156,6 +214,7 @@ def lister(request, list_id):
         return HttpResponseRedirect(reverse('lists:lister', args=(list_id,)))
 
 
+@auth_required
 def vote(request, list_id, item_id, action):
     item = get_object_or_404(Item, pk=item_id)
     lister = Lister.objects.get(pk=list_id)

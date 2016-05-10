@@ -1,67 +1,101 @@
-{% load staticfiles %}
+{% extends 'lists/base.html' %}
 
-<head>
-    <link rel="stylesheet" type="text/css" href="{% static 'lists/style.css' %}" />
-</head>
+{% block title %}{{ lister }}{% endblock %}
 
-<body>
-    <a href="{% url 'lists:index' %}">Home</a>
-    <h1 style="margin-bottom:0px;">{{ lister }}</h1>
-
-    <input type="button" id="toggle-edit" value="Edit"/><br><br>
-
-    {% if items %}
-        {% for item in items %}
-            <div style="display:block;width:6em;float:left;">
-                <form class="edit" style="display:inline-block;padding-right:1em;" action="{% url 'lists:vote' list_id=list_id item_id=item.id action='delete' %}" method="post">{% csrf_token %}<input type=submit value="Delete"/></form>
-                {% if not voted %}
-                    <form style="display:inline-block" action="{% url 'lists:vote' list_id=list_id item_id=item.id action='up' %}" method="post">{% csrf_token %}<input type=submit value="+"/></form>
-                {% else %}
-                    {% if item.item_text == voted %}
-                        <form style="display:inline-block" action="{% url 'lists:vote' list_id=list_id item_id=item.id action='down' %}" method="post">{% csrf_token %}<input type=submit value="-"/></form>
-                    {% endif %}
-                {% endif %}
+{% block content %}
+<div class="page-header">
+    <h1>{{ lister }}   <button class="btn btn-xs btn-warning" type="button" id="toggle-edit">Edit</button></h1>
+</div>
+<div class="row">
+    <div class="col-lg-6">
+        <div class="list-group">
+            {% if items %}
+                {% for item in items %}
+                    <div class="list-group-item">
+                        <form class="edit" style="float:right;" action="{% url 'lists:vote' list_id=list_id item_id=item.id action='delete' %}" method="post">{% csrf_token %}<button class="close" type=submit>&times;</button></form>
+                        {% if not voted %}
+                            <form style="display:inline-block" action="{% url 'lists:vote' list_id=list_id item_id=item.id action='up' %}" method="post">{% csrf_token %}<button class="btn btn-xs btn-primary" type=submit>&plus;</button></form>
+                        {% else %}
+                            {% if item.item_text == voted %}
+                                <form style="display:inline-block" action="{% url 'lists:vote' list_id=list_id item_id=item.id action='down' %}" method="post">{% csrf_token %}<button class="btn btn-xs btn-danger" type=submit>&minus;</button></form>
+                            {% endif %}
+                        {% endif %}
+                        {{ item.votes }} {{ item.item_text }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        </div>
+    </div>
+    <!-- /.col-sm-4 -->
+    <div class="col-lg-3 col-md-6"></div>
+    <div class="col-lg-3 col-md-6">
+        <div class="panel panel-primary">
+            <div class="panel-heading">
+                <div class="row">
+                    <div class="col-xs-3">
+                        <i class="fa fa-list fa-5x"></i>
+                    </div>
+                    <div class="col-xs-9 text-right">
+                        <div class="huge">{{ items|length }}</div>
+                        <div>Items</div>
+                    </div>
+                </div>
             </div>
-            <div style="display:block:">
-                {{ item.votes }} {{ item.item_text }}
-            </div><br>
-        {% endfor %}
+        </div>
+    </div>
+</div>
 
-    {% else %}
-        <p>No items are available.</p>
-    {% endif %}
+<div class="row">
+    <div class="col-lg-3 col-md-6">
+        <form role="form" class="edit" action="{% url 'lists:lister' list_id %}" method="post">
+            {% csrf_token %}
+            <div class="form-group">
+                <label>Add Item</label>
+                <input class="form-control" type="text" name="add" id="add" value="" />
+            </div>
+            <div class="form-group">
+                <button class="btn btn-xs btn-primary" type="submit">Add</button>
+            </div>
+        </form>
+    </div>
+</div>
 
-    <form class="edit" action="{% url 'lists:lister' list_id %}" method="post">
-        {% csrf_token %}
-        <input type="text" name="add" id="add" value="" />
-        <input type="submit" value="Add" />
-    </form>
+{% if mine %}
+<div class="row">
+    <div class="col-sm-3">
+        <form role="form" class="edit" action="{% url 'lists:grant' list_id %}" method="post">
+            <b>Grant Users Access:</b>
+            <div class="form-group">
+                {% csrf_token %}
+                {{ grant_form }}
+            </div>
+            <div class="form-group">
+                <button type="submit" class="btn btn-sm btn-primary">Grant</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endif %}
+{% endblock %}
 
-    <input type="button" id="random" style="float:left;" value="Random"></input>
-    <input type="button" id="tie-breaker" style="float:left;" value="Tie Breaker"></input>
-    <br>
-    <h1 id="selected"></h1>
-
-    <script src="{% static 'lists/jquery-1.12.3.min.js' %}"></script>
-    <script type="text/javascript">
-      $(document).ready(function(){
-        $("#toggle-edit").click(function(){
-          if($(".edit").css('visibility') == 'hidden'){
-            $(".edit").css('visibility', 'visible');
-          }else{
-            $(".edit").css('visibility', 'hidden');
-          }
-        });
-        $("#random").click(function(){
-          $.get("{% url 'api:random' list_id=list_id %}", function(data){
-            $("#selected").html(data);
-          });
-        });
-        $("#tie-breaker").click(function(){
-          $.get("{% url 'api:random' list_id=list_id option='tie' %}", function(data){
-            $("#selected").html(data);
-          });
-        });
-      });
-    </script>
-</body>
+{% block endscript %}
+$(document).ready(function(){
+  $("#toggle-edit").click(function(){
+    if($(".edit").css('visibility') == 'hidden'){
+      $(".edit").css('visibility', 'visible');
+    }else{
+      $(".edit").css('visibility', 'hidden');
+    }
+  });
+  $("#random").click(function(){
+    $.get("{% url 'api:random' list_id=list_id %}", function(data){
+      $("#selected").html(data);
+    });
+  });
+  $("#tie-breaker").click(function(){
+    $.get("{% url 'api:random' list_id=list_id option='tie' %}", function(data){
+      $("#selected").html(data);
+    });
+  });
+});
+{% endblock %}

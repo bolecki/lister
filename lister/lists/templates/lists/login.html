@@ -1,53 +1,56 @@
-{% load staticfiles %}
+{% extends 'lists/base.html' %}
 
-<head>
-    <link rel="stylesheet" type="text/css" href="{% static 'lists/style.css' %}" />
-</head>
+{% block title %}Lister{% endblock %}
 
-<body>
-    {% if user.is_authenticated %}
-    Welcome {{ user.get_username }}! <a href='{% url 'lists:logout' %}'>Logout</a>
-
+{% block content %}
+<div class="page-header">
+    {% if not mine %}
+    <h1>Public Lists</h1>
+    {% else %}
     <h1>Your Lists</h1>
-    {% else %}
-    <form action="{% url 'lists:login' %}" method="post">
-        <b>Login:</b>
-        {% csrf_token %}
-        {{ login_form }}
-        <input type="submit" value="Login" />
-        <a href="{% url 'lists:register' %}">Register</a>
-    </form>
-
-    {% if messages %}
-    <ul class="messages">
-        {% for message in messages %}
-        {% if 'error' in message.tags %}<li class="{{ message.tags }}">{{ message }}</li>{% endif %}
-        {% endfor %}
-    </ul>
     {% endif %}
-
-    <h2>Public Lists</h2>
-    {% endif %}
-
-    {% if lists %}
-        <ul style="list-style:none;">
-        {% for list in lists %}
-            <a href="{% url 'lists:lister' list.id %}">{{ list.list_name }}</a>{% if not user.is_authenticated %} - {{ list.user.username }}{% endif %}<br>
-        {% endfor %}
-        </ul>
-    {% else %}
-        <p>No lists are available.</p>
-    {% endif %}
-
-    <form action="{% url 'lists:create' %}" method="post" style="padding-top:3em;">
-        <b>Create a List:</b>
-        {% csrf_token %}
-        {{ list_form }}
-        <input type="submit" value="Add" />
-    </form>
-
-    <div style="position:absolute;right:1em;top:1em;">
-        <a href="{% url 'lists:api' %}">API</a>
-        <a href="https://github.com/bolecki/lister">Github</a>
+</div>
+<div class="row">
+    <div class="col-lg-6">
+        <div class="list-group">
+            {% if lists %}
+                {% for list in lists %}
+                    <a href="{% url 'lists:lister' list.id %}" class="list-group-item">{{ list.list_name }}<small>{% if not mine %} - {{ list.user.username }}{% endif %}</small></a>
+                {% endfor %}
+            {% endif %}
+        </div>
     </div>
-</body>
+    <!-- /.col-sm-4 -->
+    <div class="col-lg-3 col-md-6"></div>
+    <div class="col-lg-3 col-md-6">
+        <div class="panel panel-primary">
+            <div class="panel-heading">
+                <div class="row">
+                    <div class="col-xs-3">
+                        <i class="fa fa-list fa-5x"></i>
+                    </div>
+                    <div class="col-xs-9 text-right">
+                        <div class="huge">{{ lists|length }}</div>
+                        <div>Lists</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-sm-3">
+        <form role="form" action="{% url 'lists:create' %}" method="post">
+            <div class="form-group">
+                <b>New List:</b>
+                {% csrf_token %}
+                {{ list_form }}
+            </div>
+            <div class="form-group">
+                <button type="submit" class="btn btn-sm btn-primary">Create</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

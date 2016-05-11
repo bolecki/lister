@@ -80,7 +80,7 @@ WSGI_APPLICATION = 'lister.wsgi.application'
 if 'OPENSHIFT_POSTGRESQL_DB_PASSWORD' in os.environ:
     DATABASES = {
         'default': {
-            'ENGINE': 'django.db.backends.postgresql',
+            'ENGINE': 'django.db.backends.postgresql_psycopg2',
             'NAME': os.environ['PGDATABASE'],
             'USER': os.environ['OPENSHIFT_POSTGRESQL_DB_USERNAME'],
             'PASSWORD': os.environ['OPENSHIFT_POSTGRESQL_DB_PASSWORD'],

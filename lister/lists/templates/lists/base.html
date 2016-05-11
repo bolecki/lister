@@ -89,7 +89,7 @@
             <div class="collapse navbar-collapse navbar-ex1-collapse">
                 <ul class="nav navbar-nav side-nav">
                     <li {% if not mine %}class="active"{% endif %}>
-                        <a href="{% url 'lists:index' %}"><i class="fa fa-fw fa-dashboard"></i> Public Lists</a>
+                        <a href="{% url 'lists:index' %}"><i class="fa fa-fw fa-list-ul"></i> Public Lists</a>
                     </li>
                     {% if user.is_authenticated %}
                     <li {% if mine %}class="active"{% endif %}>

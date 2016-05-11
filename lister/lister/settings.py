@@ -77,12 +77,25 @@ WSGI_APPLICATION = 'lister.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/1.9/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, '../db.sqlite3'),
+if 'OPENSHIFT_POSTGRESQL_DB_PASSWORD' in os.environ:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql_psycopg2',
+            'NAME': os.environ['PGDATABASE'],
+            'USER': os.environ['OPENSHIFT_POSTGRESQL_DB_USERNAME'],
+            'PASSWORD': os.environ['OPENSHIFT_POSTGRESQL_DB_PASSWORD'],
+            'HOST': os.environ['OPENSHIFT_POSTGRESQL_DB_HOST'],
+            'PORT': os.environ['OPENSHIFT_POSTGRESQL_DB_PORT'],
+        }
     }
-}
+
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': os.path.join(BASE_DIR, '../db.sqlite3'),
+        }
+    }
 
 
 # Password validation

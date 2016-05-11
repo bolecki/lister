@@ -123,6 +123,8 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
+STATIC_ROOT = os.path.join(BASE_DIR, '../wsgi/static/')
+
 SERIALIZATION_MODULES = {'filtered-json': 'api.filtered_json_serializer'}
 
 REST_FRAMEWORK = {

@@ -31,7 +31,6 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
-    'sslserver',
     'lists.apps.ListsConfig',
     'api.apps.ApiConfig',
     'django.contrib.admin',
@@ -42,6 +41,9 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework.authtoken',
 ]
+
+if not 'OPENSHIFT_APP_NAME' in os.environ:
+    INSTALLED_APPS.append('sslserver')
 
 MIDDLEWARE_CLASSES = [
     'django.middleware.security.SecurityMiddleware',

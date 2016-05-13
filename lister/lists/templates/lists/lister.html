@@ -1,3 +1,5 @@
+{% load list_extras %}
+
 <div class="col-lg-6">
     <div class="list-group">
         {% if items %}
@@ -11,7 +13,7 @@
                             <button class="btn btn-xs btn-danger" onclick="update({{ item.id }}, 'down')" type=submit>&minus;</button>
                         {% endif %}
                     {% endif %}
-                    <span title="{{ item.users.all }}"> {{ item.votes }} {{ item.item_text }}</span>
+                    <span title="{{ item.users.all|usernames }}"> {{ item.votes }} {{ item.item_text }}</span>
                 </div>
             {% endfor %}
         {% endif %}

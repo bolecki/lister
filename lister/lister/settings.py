@@ -31,6 +31,7 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    'sslserver',
     'lists.apps.ListsConfig',
     'api.apps.ApiConfig',
     'django.contrib.admin',

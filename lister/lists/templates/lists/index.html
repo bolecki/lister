@@ -2,54 +2,25 @@
 
 {% block title %}{{ lister }}{% endblock %}
 
+{% block startscript %}
+function update(id, action){
+  var url = "{% url 'lists:vote' list_id=list_id item_id=12345 action='abcdef' %}";
+
+  url = url.replace('12345', id);
+  url = url.replace('abcdef', action);
+
+  $.post(url, function(data){
+    $("#lister-items").html(data);
+  });
+}
+{% endblock %}
+
 {% block content %}
 <div class="page-header">
     <h1>{{ lister }}   <button class="btn btn-xs btn-warning" type="button" id="toggle-edit">Edit</button></h1>
 </div>
-<div class="row">
-    <div class="col-lg-6">
-        <div class="list-group">
-            {% if items %}
-                {% for item in items %}
-                    <div class="list-group-item">
-                        <form class="edit" style="float:right;" action="{% url 'lists:vote' list_id=list_id item_id=item.id action='delete' %}" method="post">{% csrf_token %}<button class="close" type=submit>&times;</button></form>
-                        {% if not voted %}
-                            <form style="display:inline-block" action="{% url 'lists:vote' list_id=list_id item_id=item.id action='up' %}" method="post">{% csrf_token %}<button class="btn btn-xs btn-primary" type=submit>&plus;</button></form>
-                        {% else %}
-                            {% if item.item_text == voted %}
-                                <form style="display:inline-block" action="{% url 'lists:vote' list_id=list_id item_id=item.id action='down' %}" method="post">{% csrf_token %}<button class="btn btn-xs btn-danger" type=submit>&minus;</button></form>
-                            {% endif %}
-                        {% endif %}
-                        {{ item.votes }} {{ item.item_text }}
-                    </div>
-                {% endfor %}
-            {% endif %}
-        </div>
-        <div class="col-lg-12">
-            <button class="btn btn-xs btn-primary" id="random">Random</button>
-            {% if items.0.votes == items.1.votes %}
-                <button class="btn btn-xs btn-primary" id="tie-breaker">Tie Breaker</button>
-            {% endif %}
-            <h4 id="selected"></h4>
-        </div>
-    </div>
-    <!-- /.col-sm-4 -->
-    <div class="col-lg-3 col-md-6"></div>
-    <div class="col-lg-3 col-md-6">
-        <div class="panel panel-primary">
-            <div class="panel-heading">
-                <div class="row">
-                    <div class="col-xs-3">
-                        <i class="fa fa-list fa-5x"></i>
-                    </div>
-                    <div class="col-xs-9 text-right">
-                        <div class="huge">{{ items|length }}</div>
-                        <div>Items</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+<div class="row" id="lister-items">
+Loading...
 </div>
 
 <div class="row">
@@ -87,22 +58,15 @@
 
 {% block endscript %}
 $(document).ready(function(){
+  $.get("{% url 'lists:part' list_id=list_id %}", function(data){
+    $("#lister-items").html(data);
+  });
   $("#toggle-edit").click(function(){
     if($(".edit").css('visibility') == 'hidden'){
       $(".edit").css('visibility', 'visible');
     }else{
       $(".edit").css('visibility', 'hidden');
     }
-  });
-  $("#random").click(function(){
-    $.get("{% url 'api:random' list_id=list_id %}", function(data){
-      $("#selected").html(data);
-    });
-  });
-  $("#tie-breaker").click(function(){
-    $.get("{% url 'api:random' list_id=list_id option='tie' %}", function(data){
-      $("#selected").html(data);
-    });
   });
 });
 {% endblock %}

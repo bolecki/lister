@@ -4,6 +4,7 @@ from django.core.urlresolvers import reverse
 from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
+from django.views.decorators.csrf import csrf_exempt
 
 from api.utils import auth_required
 
@@ -215,6 +216,35 @@ def lister(request, list_id):
 
 
 @auth_required
+def part(request, list_id):
+    lister = Lister.objects.get(pk=list_id)
+
+    items = lister.item_set.all().order_by('-votes')
+    voted = None
+
+    if request.user.is_authenticated():
+        for item in items:
+            if item.users.filter(pk=request.user.pk).exists():
+                voted = item.item_text
+
+    mine = False
+
+    if request.user == lister.user:
+        mine = True
+
+    context = {
+        'items': items,
+        'list_id': list_id,
+        'lister': lister.list_name,
+        'voted': voted,
+        'mine': mine
+    }
+
+    return render(request, 'lists/lister.html', context)
+
+
+@csrf_exempt
+@auth_required
 def vote(request, list_id, item_id, action):
     item = get_object_or_404(Item, pk=item_id)
     lister = Lister.objects.get(pk=list_id)
@@ -236,7 +266,7 @@ def vote(request, list_id, item_id, action):
     else:
         item.save()
 
-    return HttpResponseRedirect(reverse('lists:lister', args=(list_id,)))
+    return HttpResponseRedirect(reverse('lists:part', args=(list_id,)))
 
 
 def api(request):

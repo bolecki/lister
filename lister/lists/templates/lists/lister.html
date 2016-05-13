@@ -11,7 +11,7 @@
                             <button class="btn btn-xs btn-danger" onclick="update({{ item.id }}, 'down')" type=submit>&minus;</button>
                         {% endif %}
                     {% endif %}
-                    {{ item.votes }} {{ item.item_text }}
+                    <span title="{{ item.users.all }}"> {{ item.votes }} {{ item.item_text }}</span>
                 </div>
             {% endfor %}
         {% endif %}

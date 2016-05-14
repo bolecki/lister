@@ -54,6 +54,7 @@ MIDDLEWARE_CLASSES = [
     'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'ssl_redirect.middleware.SSLRedirectMiddleware',
 ]
 
 ROOT_URLCONF = 'lister.urls'
@@ -148,3 +149,7 @@ REST_FRAMEWORK = {
         'rest_framework.authentication.TokenAuthentication',
     )
 }
+
+SSL_ON = True
+
+SSL_ALWAYS = True

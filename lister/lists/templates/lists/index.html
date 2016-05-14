@@ -61,6 +61,7 @@ $(document).ready(function(){
   $.get("{% url 'lists:part' list_id=list_id %}", function(data){
     $("#lister-items").html(data);
   });
+
   $("#toggle-edit").click(function(){
     if($(".edit").css('visibility') == 'hidden'){
       $(".edit").css('visibility', 'visible');
@@ -68,5 +69,14 @@ $(document).ready(function(){
       $(".edit").css('visibility', 'hidden');
     }
   });
+
+  (function poll() {
+    setTimeout(function() {
+      $.ajax({ url: "{% url 'lists:part' list_id=list_id %}", success: function(data) {
+        $("#lister-items").html(data);
+      }, complete: poll });
+    }, 10000);
+  })();
+
 });
 {% endblock %}

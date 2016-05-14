@@ -1,5 +1,5 @@
 #!/bin/bash
 
-python ${OPENSHIFT_REPO_DIR}/lister/manage.py syncdb --noinput
+python ${OPENSHIFT_REPO_DIR}lister/manage.py syncdb --noinput
 
-python ${OPENSHIFT_REPO_DIR}/lister/manage.py collectstatic --noinput
+python ${OPENSHIFT_REPO_DIR}lister/manage.py collectstatic --noinput

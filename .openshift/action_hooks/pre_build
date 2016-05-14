@@ -1,5 +1,7 @@
 #!/bin/bash
 
+export OPENSHIFT_PYTHON_WSGI_APPLICATION="${OPENSHIFT_REPO_DIR}lister/lister/wsgi.py"
+
 # Fix haproxy check if scalable openshift
 if [ ! -z ${OPENSHIFT_HAPROXY_DIR+x} ]; then
     sed -i 's:option httpchk GET /:option httpchk GET /lists:g' ${OPENSHIFT_HAPROXY_DIR}conf/haproxy.cfg

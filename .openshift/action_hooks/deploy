@@ -1,5 +1,9 @@
 #!/bin/bash
 
-python ${OPENSHIFT_REPO_DIR}/lister/manage.py syncdb --noinput
+if [ -z ${OPENSHIFT_HAPROXY_DIR+x} ]; then
+    sed 's:option httpchk GET /:option httpchk GET /lists:g' ${OPENSHIFT_HAPROXY_DIR}conf/haproxy.cfg
+fi
 
-python ${OPENSHIFT_REPO_DIR}/lister/manage.py collectstatic --noinput
+python ${OPENSHIFT_REPO_DIR}lister/manage.py syncdb --noinput
+
+python ${OPENSHIFT_REPO_DIR}lister/manage.py collectstatic --noinput

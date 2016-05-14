@@ -42,6 +42,9 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',
 ]
 
+if not 'OPENSHIFT_APP_NAME' in os.environ:
+    INSTALLED_APPS.append('sslserver')
+
 MIDDLEWARE_CLASSES = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -51,6 +54,7 @@ MIDDLEWARE_CLASSES = [
     'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'ssl_redirect.middleware.SSLRedirectMiddleware',
 ]
 
 ROOT_URLCONF = 'lister.urls'
@@ -145,3 +149,7 @@ REST_FRAMEWORK = {
         'rest_framework.authentication.TokenAuthentication',
     )
 }
+
+SSL_ON = True
+
+SSL_ALWAYS = True

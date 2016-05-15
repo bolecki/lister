@@ -1,5 +1,7 @@
 {% extends 'lists/base.html' %}
 
+{% load staticfiles %}
+
 {% block title %}{{ lister }}{% endblock %}
 
 {% block startscript %}
@@ -54,6 +56,9 @@ Loading...
     </div>
 </div>
 {% endif %}
+
+<script src="{% static 'lists/sortable.min.js' %}"></script>
+
 {% endblock %}
 
 {% block endscript %}

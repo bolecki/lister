@@ -7,7 +7,9 @@
                 <div class="list-group-item">
                     <button class="close edit" onclick="update({{ item.id }}, 'delete')" type=submit>&times;</button>
                     {% if not voted %}
+                        {% if not sortable %}
                         <button class="btn btn-xs btn-primary" onclick="update({{ item.id }}, 'up')" type=submit>&plus;</button>
+                        {% endif %}
                     {% else %}
                         {% if item.item_text == voted %}
                             <button class="btn btn-xs btn-danger" onclick="update({{ item.id }}, 'down')" type=submit>&minus;</button>
@@ -18,12 +20,14 @@
             {% endfor %}
         {% endif %}
     </div>
+    {% if not sortable %}
     <div class="col-lg-12">
         <button class="btn btn-xs btn-primary" id="random">Random</button>
         {% if items.0.votes == items.1.votes %}
             <button class="btn btn-xs btn-primary" id="tie-breaker">Tie Breaker</button>
         {% endif %}
     </div>
+    {% endif %}
 </div>
 <!-- /.col-sm-4 -->
 <div class="col-lg-3 col-md-6"></div>
@@ -44,8 +48,19 @@
 </div>
 <script type="text/javascript">
 
-Sortable.create(sortList, { animation: 150 });
+Sortable.create(sortList, {
+  animation: 150,
+  onEnd: function (/**Event*/evt) {
+    var url = "{% url 'lists:sort' list_id=list_id old_index=99999 new_index=99998 %}";
 
+    url = url.replace('99999', evt.oldIndex);
+    url = url.replace('99998', evt.newIndex);
+
+    $.post(url, function(){});
+  },
+});
+
+{% if not sortable %}
 $("#random").click(function(){
   $("#selected").html("Loading...");
   $.get("{% url 'api:random' list_id=list_id %}", function(data){
@@ -59,4 +74,5 @@ $("#tie-breaker").click(function(){
     $("#selected").html(data);
   });
 });
+{% endif %}
 </script>

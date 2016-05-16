@@ -5,6 +5,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 from django.views.decorators.csrf import csrf_exempt
+from django.db.models import Max, F
 
 from api.utils import auth_required
 
@@ -128,13 +129,14 @@ def create(request):
         if form.is_valid():
             name = form.cleaned_data['name']
             public = form.cleaned_data['public']
+            sortable = form.cleaned_data['sortable']
 
             user = User.objects.get(username="Anonymous")
 
             if request.user.is_authenticated():
                 user = request.user
 
-            lister = Lister(list_name=name, public=public, user=user)
+            lister = Lister(list_name=name, public=public, sortable=sortable, user=user)
             lister.save()
 
             group_name = "lister-{pk}".format(pk=lister.pk)
@@ -178,7 +180,11 @@ def lister(request, list_id):
     lister = Lister.objects.get(pk=list_id)
 
     if request.method == 'GET':
-        items = lister.item_set.all().order_by('-votes')
+        if lister.sortable:
+            items = lister.item_set.all().order_by('votes')
+        else:
+            items = lister.item_set.all().order_by('-votes')
+
         voted = None
 
         if request.user.is_authenticated():
@@ -186,13 +192,13 @@ def lister(request, list_id):
                 if item.users.filter(pk=request.user.pk).exists():
                     voted = item.item_text
 
-        login_form = LoginForm()
-        grant_form = GrantForm()
-
         mine = False
 
         if request.user == lister.user:
             mine = True
+
+        login_form = LoginForm()
+        grant_form = GrantForm()
 
         context = {
             'items': items,
@@ -201,7 +207,8 @@ def lister(request, list_id):
             'grant_form': grant_form,
             'lister': lister.list_name,
             'voted': voted,
-            'mine': mine
+            'mine': mine,
+            'sortable': lister.sortable
         }
 
         return render(request, 'lists/index.html', context)
@@ -210,7 +217,15 @@ def lister(request, list_id):
         text = request.POST['add']
 
         if text != "":
-            lister.item_set.create(item_text=text, votes=0)
+            if lister.sortable:
+                if lister.item_set.all().count() == 0:
+                    lister.item_set.create(item_text=text, votes=1)
+                else:
+                    rank = lister.item_set.all().aggregate(Max('votes'))['votes__max'] + 1
+                    lister.item_set.create(item_text=text, votes=rank)
+
+            else:
+                lister.item_set.create(item_text=text, votes=0)
 
         return HttpResponseRedirect(reverse('lists:lister', args=(list_id,)))
 
@@ -219,7 +234,11 @@ def lister(request, list_id):
 def part(request, list_id):
     lister = Lister.objects.get(pk=list_id)
 
-    items = lister.item_set.all().order_by('-votes')
+    if lister.sortable:
+        items = lister.item_set.all().order_by('votes')
+    else:
+        items = lister.item_set.all().order_by('-votes')
+
     voted = None
 
     if request.user.is_authenticated():
@@ -237,7 +256,8 @@ def part(request, list_id):
         'list_id': list_id,
         'lister': lister.list_name,
         'voted': voted,
-        'mine': mine
+        'mine': mine,
+        'sortable': lister.sortable
     }
 
     return render(request, 'lists/lister.html', context)
@@ -265,6 +285,28 @@ def vote(request, list_id, item_id, action):
         item.delete()
     else:
         item.save()
+
+    return HttpResponseRedirect(reverse('lists:part', args=(list_id,)))
+
+
+@csrf_exempt
+@auth_required
+def sort(request, list_id, old_index, new_index):
+    old_index = int(old_index)
+    new_index = int(new_index)
+
+    if request.method == "POST":
+        lister = Lister.objects.get(pk=list_id)
+
+        lister.item_set.filter(votes=old_index+1).update(votes=0)
+
+        if old_index > new_index:
+            lister.item_set.filter(votes__range=(new_index+1,old_index)).update(votes=F('votes') + 1)
+
+        else:
+            lister.item_set.filter(votes__range=(old_index+2,new_index+1)).update(votes=F('votes') - 1)
+
+        lister.item_set.filter(votes=0).update(votes=new_index+1)
 
     return HttpResponseRedirect(reverse('lists:part', args=(list_id,)))
 

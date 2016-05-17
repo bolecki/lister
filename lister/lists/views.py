@@ -281,8 +281,17 @@ def vote(request, list_id, item_id, action):
         if request.user.is_authenticated() and not lister.public:
             item.users.remove(request.user)
 
+    elif action == "clear":
+        items = lister.item_set.all()
+        items.update(votes=0)
+        [x.users.clear() for x in items]
+
     if action == "delete":
         item.delete()
+
+    elif action == "clear":
+        pass
+
     else:
         item.save()
 

@@ -1,3 +1,7 @@
 .edit {
   visibility:hidden;
 }
+
+.hyperdiv {
+  cursor: pointer;
+}

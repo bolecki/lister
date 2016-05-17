@@ -320,5 +320,15 @@ def sort(request, list_id, old_index, new_index):
     return HttpResponseRedirect(reverse('lists:part', args=(list_id,)))
 
 
+@csrf_exempt
+@auth_required
+def delete(request, list_id):
+    if request.method == "POST":
+        lister = Lister.objects.get(pk=list_id)
+        lister.delete()
+
+    return HttpResponseRedirect(reverse('lists:login'))
+
+
 def api(request):
     return render(request, 'lists/api.html')

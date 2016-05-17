@@ -2,6 +2,25 @@
 
 {% block title %}Lister{% endblock %}
 
+{% block startscript %}
+function deleteList(id){
+  var url = "{% url 'lists:delete' list_id=12345 %}";
+
+  url = url.replace('12345', id);
+
+  $.post(url, function(){});
+}
+
+function hyperdiv(id){
+  var url = "{% url 'lists:lister' list_id=12345 %}";
+
+  url = url.replace('12345', id);
+
+  window.location.href = url;
+}
+
+{% endblock %}
+
 {% block content %}
 <div class="page-header">
     {% if not mine %}
@@ -15,7 +34,10 @@
         <div class="list-group">
             {% if lists %}
                 {% for list in lists %}
-                    <a href="{% url 'lists:lister' list.id %}" class="list-group-item">{{ list.list_name }}<small>{% if not mine %} - {{ list.user.username }}{% endif %}</small></a>
+                    <div class="list-group-item hyperdiv" onclick="hyperdiv({{ list.id }})">
+                        {{ list.list_name }}<small>{% if not mine %} - {{ list.user.username }}{% endif %}</small>
+                        <button class="close" onclick="deleteList({{ list.id }})" type=submit>&times;</button>
+                    </div>
                 {% endfor %}
             {% endif %}
         </div>
@@ -53,4 +75,10 @@
         </form>
     </div>
 </div>
+{% endblock %}
+
+{% block endscript %}
+$(".close").click(function(e){
+  e.stopPropagation();
+});
 {% endblock %}

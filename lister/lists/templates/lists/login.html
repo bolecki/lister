@@ -8,7 +8,9 @@ function deleteList(id){
 
   url = url.replace('12345', id);
 
-  $.post(url, function(){});
+  $.post(url, function(data){
+    $("#listers").html(data);
+  });
 }
 
 function hyperdiv(id){
@@ -29,36 +31,8 @@ function hyperdiv(id){
     <h1>Your Lists</h1>
     {% endif %}
 </div>
-<div class="row">
-    <div class="col-lg-6">
-        <div class="list-group">
-            {% if lists %}
-                {% for list in lists %}
-                    <div class="list-group-item hyperdiv" onclick="hyperdiv({{ list.id }})">
-                        {{ list.list_name }}<small>{% if not mine %} - {{ list.user.username }}{% endif %}</small>
-                        <button class="close" onclick="deleteList({{ list.id }})" type=submit>&times;</button>
-                    </div>
-                {% endfor %}
-            {% endif %}
-        </div>
-    </div>
-    <!-- /.col-sm-4 -->
-    <div class="col-lg-3 col-md-6"></div>
-    <div class="col-lg-3 col-md-6">
-        <div class="panel panel-primary">
-            <div class="panel-heading">
-                <div class="row">
-                    <div class="col-xs-3">
-                        <i class="fa fa-list fa-5x"></i>
-                    </div>
-                    <div class="col-xs-9 text-right">
-                        <div class="huge">{{ lists|length }}</div>
-                        <div>Lists</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+<div class="row" id="listers">
+Loading...
 </div>
 
 <div class="row">
@@ -78,7 +52,13 @@ function hyperdiv(id){
 {% endblock %}
 
 {% block endscript %}
-$(".close").click(function(e){
-  e.stopPropagation();
-});
+  {% if mine %}
+    var url="{% url 'lists:part_index' selection='mylists' %}";
+  {% else %}
+    var url="{% url 'lists:part_index' selection='public' %}";
+  {% endif %}
+
+  $.get(url, function(data){
+    $("#listers").html(data);
+  });
 {% endblock %}

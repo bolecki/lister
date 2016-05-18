@@ -39,6 +39,25 @@ def index(request):
     return render(request, 'lists/login.html', context)
 
 
+def part_index(request, selection):
+    mine = False
+
+    if selection == "mylists":
+        mine = True
+
+    if mine:
+        lists = request.user.lister_set.all()
+    else:
+        lists = Lister.objects.filter(public=True)
+
+    context = {
+        'lists': lists,
+        'mine': mine
+    }
+
+    return render(request, 'lists/index_part.html', context)
+
+
 def user_lists(request):
     if not request.user.is_authenticated():
         return HttpResponseRedirect(reverse('lists:index'))
@@ -327,7 +346,7 @@ def delete(request, list_id):
         lister = Lister.objects.get(pk=list_id)
         lister.delete()
 
-    return HttpResponseRedirect(reverse('lists:login'))
+    return HttpResponseRedirect(reverse('lists:part_index', args=("mylists",)))
 
 
 def api(request):

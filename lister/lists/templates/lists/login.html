@@ -2,6 +2,27 @@
 
 {% block title %}Lister{% endblock %}
 
+{% block startscript %}
+function deleteList(id){
+  var url = "{% url 'lists:delete' list_id=12345 %}";
+
+  url = url.replace('12345', id);
+
+  $.post(url, function(data){
+    $("#listers").html(data);
+  });
+}
+
+function hyperdiv(id){
+  var url = "{% url 'lists:lister' list_id=12345 %}";
+
+  url = url.replace('12345', id);
+
+  window.location.href = url;
+}
+
+{% endblock %}
+
 {% block content %}
 <div class="page-header">
     {% if not mine %}
@@ -10,33 +31,8 @@
     <h1>Your Lists</h1>
     {% endif %}
 </div>
-<div class="row">
-    <div class="col-lg-6">
-        <div class="list-group">
-            {% if lists %}
-                {% for list in lists %}
-                    <a href="{% url 'lists:lister' list.id %}" class="list-group-item">{{ list.list_name }}<small>{% if not mine %} - {{ list.user.username }}{% endif %}</small></a>
-                {% endfor %}
-            {% endif %}
-        </div>
-    </div>
-    <!-- /.col-sm-4 -->
-    <div class="col-lg-3 col-md-6"></div>
-    <div class="col-lg-3 col-md-6">
-        <div class="panel panel-primary">
-            <div class="panel-heading">
-                <div class="row">
-                    <div class="col-xs-3">
-                        <i class="fa fa-list fa-5x"></i>
-                    </div>
-                    <div class="col-xs-9 text-right">
-                        <div class="huge">{{ lists|length }}</div>
-                        <div>Lists</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+<div class="row" id="listers">
+Loading...
 </div>
 
 <div class="row">
@@ -53,4 +49,16 @@
         </form>
     </div>
 </div>
+{% endblock %}
+
+{% block endscript %}
+  {% if mine %}
+    var url="{% url 'lists:part_index' selection='mylists' %}";
+  {% else %}
+    var url="{% url 'lists:part_index' selection='public' %}";
+  {% endif %}
+
+  $.get(url, function(data){
+    $("#listers").html(data);
+  });
 {% endblock %}

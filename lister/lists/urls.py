@@ -13,7 +13,10 @@ urlpatterns = [
     url(r'^my-lists/$', views.user_lists, name='user_lists'),
     url(r'^create/$', views.create, name='create'),
     url(r'^(?P<list_id>[0-9]+)/$', views.lister, name='lister'),
+    url(r'^part/(?P<selection>(public|mylists))/$', views.part_index, name='part_index'),
     url(r'^part/(?P<list_id>[0-9]+)/$', views.part, name='part'),
     url(r'^(?P<list_id>[0-9]+)/grant/$', views.grant, name='grant'),
+    url(r'^(?P<list_id>[0-9]+)/delete/$', views.delete, name='delete'),
     url(r'^(?P<list_id>[0-9]+)/(?P<item_id>[0-9]+)/(?P<action>[a-z]+)/vote/$', views.vote, name='vote'),
+    url(r'^(?P<list_id>[0-9]+)/(?P<old_index>[0-9]+)/(?P<new_index>[0-9]+)/sort/$', views.sort, name='sort'),
 ]

@@ -9,14 +9,17 @@ def validate_username(username):
 class CreateListForm(forms.Form):
     name = forms.CharField(label="", max_length=30, widget=forms.TextInput(attrs={'placeholder': 'Name', 'class': 'form-control'}))
     public = forms.BooleanField(required=False, widget=forms.CheckboxInput(attrs={'class': 'checkbox'}))
+    sortable = forms.BooleanField(required=False, widget=forms.CheckboxInput(attrs={'class': 'checkbox'}))
 
     def __init__(self, *args, **kwargs):
-        show_public = kwargs.pop('authenticated', False)
+        authenticated = kwargs.pop('authenticated', False)
 
         super(CreateListForm, self).__init__(*args, **kwargs)
-        if not show_public:
+        if not authenticated:
             self.fields['public'].widget = forms.HiddenInput()
             self.fields['public'].initial = True
+            self.fields['sortable'].widget = forms.HiddenInput()
+            self.fields['sortable'].initial = False
 
 
 class LoginForm(forms.Form):

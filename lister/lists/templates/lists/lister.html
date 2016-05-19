@@ -48,6 +48,7 @@
 </div>
 <script type="text/javascript">
 
+{% if sortable %}
 Sortable.create(sortList, {
   animation: 150,
   onEnd: function (/**Event*/evt) {
@@ -60,7 +61,8 @@ Sortable.create(sortList, {
   },
 });
 
-{% if not sortable %}
+{% else %}
+
 $("#random").click(function(){
   $("#selected").html("Loading...");
   $.get("{% url 'api:random' list_id=list_id %}", function(data){

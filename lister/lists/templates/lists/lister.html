@@ -81,17 +81,19 @@ Sortable.create(sortList, {
 
 {% else %}
 
+var randomText = "Random: ";
+
 $("#random").click(function(){
   $("#selected").html("Loading...");
   $.get("{% url 'api:random' list_id=list_id %}", function(data){
-    $("#selected").html(data);
+    $("#selected").html(randomText + data);
   });
 });
 
 $("#tie-breaker").click(function(){
   $("#selected").html("Loading...");
   $.get("{% url 'api:random' list_id=list_id option='tie' %}", function(data){
-    $("#selected").html(data);
+    $("#selected").html(randomText + data);
   });
 });
 {% endif %}

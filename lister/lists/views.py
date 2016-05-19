@@ -12,7 +12,7 @@ from api.utils import auth_required
 from .forms import CreateListForm, LoginForm, GrantForm
 
 from django.contrib.auth.models import User, Group
-from .models import Lister, Item
+from .models import Lister, Item, Session
 
 def index(request):
     lists = Lister.objects.filter(public=True)
@@ -206,9 +206,12 @@ def lister(request, list_id):
 
         voted = None
 
-        if request.user.is_authenticated():
-            for item in items:
+        for item in items:
+            if request.user.is_authenticated():
                 if item.users.filter(pk=request.user.pk).exists():
+                    voted = item.item_text
+            else:
+                if item.sessions.filter(key=request.session.session_key).exists():
                     voted = item.item_text
 
         mine = False
@@ -260,9 +263,12 @@ def part(request, list_id):
 
     voted = None
 
-    if request.user.is_authenticated():
-        for item in items:
+    for item in items:
+        if request.user.is_authenticated():
             if item.users.filter(pk=request.user.pk).exists():
+                voted = item.item_text
+        else:
+            if item.sessions.filter(key=request.session.session_key).exists():
                 voted = item.item_text
 
     mine = False
@@ -291,14 +297,21 @@ def vote(request, list_id, item_id, action):
     if action == "up":
         item.votes += 1
 
-        if request.user.is_authenticated() and not lister.public:
+        if request.user.is_authenticated():
             item.users.add(request.user)
+        else:
+            request.session.save()
+            session, _ = Session.objects.get_or_create(key=request.session.session_key)
+            item.sessions.add(session)
 
     elif action == "down" and item.votes > 0:
         item.votes -= 1
 
-        if request.user.is_authenticated() and not lister.public:
+        if request.user.is_authenticated():
             item.users.remove(request.user)
+        else:
+            session = Session.objects.get(key=request.session.session_key)
+            item.sessions.remove(session)
 
     elif action == "clear":
         items = lister.item_set.all()

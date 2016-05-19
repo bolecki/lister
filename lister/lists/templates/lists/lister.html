@@ -8,11 +8,11 @@
                     <button class="close edit" onclick="update({{ item.id }}, 'delete')" type=submit>&times;</button>
                     {% if not voted %}
                         {% if not sortable %}
-                        <button class="btn btn-xs btn-primary" onclick="update({{ item.id }}, 'up')" type=submit>&plus;</button>
+                        <button class="btn btn-xs btn-primary fa fa-arrow-up vote up-vote" onclick="update({{ item.id }}, 'up')" type=submit></button>
                         {% endif %}
                     {% else %}
                         {% if item.item_text == voted %}
-                            <button class="btn btn-xs btn-danger" onclick="update({{ item.id }}, 'down')" type=submit>&minus;</button>
+                            <button class="btn btn-xs btn-danger fa fa-arrow-down vote down-vote" onclick="update({{ item.id }}, 'down')" type=submit></button>
                         {% endif %}
                     {% endif %}
                     <span title="{{ item.users.all|usernames }}"> {{ item.votes }} {{ item.item_text }}</span>

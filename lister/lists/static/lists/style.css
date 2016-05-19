@@ -5,3 +5,16 @@
 .hyperdiv {
   cursor: pointer;
 }
+
+.vote {
+  background:none;
+  border:none;
+}
+
+.up-vote {
+  color: #337ab7;
+}
+
+.down-vote {
+  color: #d9534f;
+}

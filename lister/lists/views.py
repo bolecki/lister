@@ -12,7 +12,8 @@ from api.utils import auth_required
 from .forms import CreateListForm, LoginForm, GrantForm
 
 from django.contrib.auth.models import User, Group
-from .models import Lister, Item, Session
+from django.contrib.sessions.models import Session
+from .models import Lister, Item
 
 def index(request):
     lists = Lister.objects.filter(public=True)
@@ -211,7 +212,7 @@ def lister(request, list_id):
                 if item.users.filter(pk=request.user.pk).exists():
                     voted = item.item_text
             else:
-                if item.sessions.filter(key=request.session.session_key).exists():
+                if item.sessions.filter(session_key=request.session.session_key).exists():
                     voted = item.item_text
 
         mine = False
@@ -268,7 +269,7 @@ def part(request, list_id):
             if item.users.filter(pk=request.user.pk).exists():
                 voted = item.item_text
         else:
-            if item.sessions.filter(key=request.session.session_key).exists():
+            if item.sessions.filter(session_key=request.session.session_key).exists():
                 voted = item.item_text
 
     mine = False
@@ -301,7 +302,7 @@ def vote(request, list_id, item_id, action):
             item.users.add(request.user)
         else:
             request.session.save()
-            session, _ = Session.objects.get_or_create(key=request.session.session_key)
+            session = Session.objects.get(session_key=request.session.session_key)
             item.sessions.add(session)
 
     elif action == "down" and item.votes > 0:
@@ -310,7 +311,7 @@ def vote(request, list_id, item_id, action):
         if request.user.is_authenticated():
             item.users.remove(request.user)
         else:
-            session = Session.objects.get(key=request.session.session_key)
+            session = Session.objects.get(session_key=request.session.session_key)
             item.sessions.remove(session)
 
     elif action == "clear":

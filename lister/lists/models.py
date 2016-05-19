@@ -5,6 +5,14 @@ from django.utils.encoding import python_2_unicode_compatible
 from django.contrib.auth.models import User
 
 
+@python_2_unicode_compatible
+class Session(models.Model):
+    key = models.CharField(max_length=200)
+
+    def __str__(self):
+        return self.key
+
+
 # Create your models here.
 @python_2_unicode_compatible
 class Lister(models.Model):
@@ -23,6 +31,7 @@ class Item(models.Model):
     item_text = models.CharField(max_length=200)
     votes = models.IntegerField(default=0)
     users = models.ManyToManyField(User)
+    sessions = models.ManyToManyField(Session)
 
     def __str__(self):
         return self.item_text

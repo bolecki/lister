@@ -82,8 +82,10 @@ $(document).ready(function(){
   $("#toggle-edit").click(function(){
     if($(".edit").css('visibility') == 'hidden'){
       $(".edit").css('visibility', 'visible');
+      $("#toggle-edit").html("Stop Editing");
     }else{
       $(".edit").css('visibility', 'hidden');
+      $("#toggle-edit").html("Edit");
     }
   });
 

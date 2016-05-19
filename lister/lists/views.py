@@ -5,7 +5,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 from django.views.decorators.csrf import csrf_exempt
-from django.db.models import Max, F
+from django.db.models import Max, Sum, F
 
 from api.utils import auth_required
 
@@ -257,12 +257,14 @@ def lister(request, list_id):
 def part(request, list_id):
     lister = Lister.objects.get(pk=list_id)
 
+    num_votes = None
+    voted = None
+
     if lister.sortable:
         items = lister.item_set.all().order_by('votes')
     else:
         items = lister.item_set.all().order_by('-votes')
-
-    voted = None
+        num_votes = items.aggregate(Sum('votes'))
 
     for item in items:
         if request.user.is_authenticated():
@@ -281,6 +283,7 @@ def part(request, list_id):
         'items': items,
         'list_id': list_id,
         'lister': lister.list_name,
+        'num_votes': num_votes,
         'voted': voted,
         'mine': mine,
         'sortable': lister.sortable

@@ -7,7 +7,7 @@ def validate_username(username):
         raise exceptions.ValidationError(_('No comma in username'))
 
 class CreateListForm(forms.Form):
-    name = forms.CharField(label="", max_length=30, widget=forms.TextInput(attrs={'placeholder': 'Name', 'class': 'form-control'}))
+    name = forms.CharField(max_length=30, widget=forms.TextInput(attrs={'placeholder': 'Name', 'class': 'form-control'}))
     public = forms.BooleanField(required=False, widget=forms.CheckboxInput(attrs={'class': 'checkbox'}))
     sortable = forms.BooleanField(required=False, widget=forms.CheckboxInput(attrs={'class': 'checkbox'}))
 
@@ -35,4 +35,4 @@ class LoginForm(forms.Form):
 
 
 class GrantForm(forms.Form):
-    users = forms.CharField(max_length=100, widget=forms.TextInput(attrs={'placeholder': 'John,Jane.Frank', 'class': 'form-control'}))
+    users = forms.CharField(label="", max_length=100, widget=forms.TextInput(attrs={'placeholder': 'John,Jane,Frank', 'class': 'form-control'}))

@@ -21,13 +21,56 @@
         {% endif %}
     </div>
     {% if not sortable %}
-    <div class="col-md-6 form-group">
-        <button class="btn btn-xs btn-primary" id="random">Random</button>
-        {% if items.0.votes == items.1.votes %}
-            <button class="btn btn-xs btn-primary" id="tie-breaker">Tie Breaker</button>
-        {% endif %}
+    <div class="row">
+        <div class="col-md-6 form-group">
+            <button class="btn btn-xs btn-primary" id="random">Random</button>
+            {% if items.0.votes == items.1.votes %}
+                <button class="btn btn-xs btn-primary" id="tie-breaker">Tie Breaker</button>
+            {% endif %}
+        </div>
     </div>
     {% endif %}
+
+    <div class="edit panel panel-primary">
+        <div class="panel-heading">
+            <h3 class="panel-title">Edit List</h3>
+        </div>
+        <div class="panel-body">
+            <div class="row">
+                <div class="col-lg-6">
+                    <form role="form" action="{% url 'lists:lister' list_id %}" method="post">
+                        {% csrf_token %}
+                        <div class="form-group">
+                            <label>Add Item</label>
+                            <input class="form-control" type="text" name="add" id="add" placeholder="Item name" value="" />
+                        </div>
+                        <div class="form-group">
+                            <button class="btn btn-xs btn-primary" type="submit">Add</button>
+                        </div>
+                    </form>
+                </div>
+                {% if mine %}
+                <div class="col-lg-6">
+                    <form role="form" class="edit" action="{% url 'lists:grant' list_id %}" method="post">
+                        <label>Grant Users Access</label>
+                        <div class="form-group">
+                            {% csrf_token %}
+                            {{ grant_form }}
+                        </div>
+                        <div class="form-group">
+                            <button type="submit" class="btn btn-xs btn-primary">Grant</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-3">
+                    <button type="submit" class="edit btn btn-sm btn-primary" onclick="update({{ items.0.id }}, 'clear')">Clear Votes</button>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
 </div>
 <!-- /.col-sm-4 -->
 {% if num_votes %}

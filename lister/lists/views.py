@@ -27,10 +27,8 @@ def index(request):
             if "login_attempt" in message.extra_tags:
                 login_form = LoginForm(login_attempt=message.message)
 
-    list_form = CreateListForm(authenticated=request.user.is_authenticated())
     context = {
         'lists': lists,
-        'list_form': list_form,
         'login_form': login_form
     }
 
@@ -42,6 +40,7 @@ def index(request):
 
 def part_index(request, selection):
     mine = False
+    list_form = CreateListForm(authenticated=request.user.is_authenticated())
 
     if selection == "mylists":
         mine = True
@@ -52,6 +51,7 @@ def part_index(request, selection):
         lists = Lister.objects.filter(public=True)
 
     context = {
+        'list_form': list_form,
         'lists': lists,
         'mine': mine
     }
@@ -220,14 +220,9 @@ def lister(request, list_id):
         if request.user == lister.user:
             mine = True
 
-        login_form = LoginForm()
-        grant_form = GrantForm()
-
         context = {
             'items': items,
             'list_id': list_id,
-            'login_form': login_form,
-            'grant_form': grant_form,
             'lister': lister.list_name,
             'voted': voted,
             'mine': mine,
@@ -279,10 +274,15 @@ def part(request, list_id):
     if request.user == lister.user:
         mine = True
 
+    login_form = LoginForm()
+    grant_form = GrantForm()
+
     context = {
         'items': items,
         'list_id': list_id,
         'lister': lister.list_name,
+        'login_form': login_form,
+        'grant_form': grant_form,
         'num_votes': num_votes,
         'voted': voted,
         'mine': mine,

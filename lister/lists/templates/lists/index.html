@@ -80,11 +80,11 @@ $(document).ready(function(){
   });
 
   $("#toggle-edit").click(function(){
-    if($(".edit").css('visibility') == 'hidden'){
-      $(".edit").css('visibility', 'visible');
+    if($("#toggle-edit").html() == 'Edit'){
+      $(".edit").show(400);
       $("#toggle-edit").html("Stop Editing");
     }else{
-      $(".edit").css('visibility', 'hidden');
+      $(".edit").hide(400);
       $("#toggle-edit").html("Edit");
     }
   });

@@ -39,7 +39,7 @@ if($("#toggle-edit").html() == "Stop Editing"){
   $(".edit").show();
 }
 
-{% if sortable %}
+{% if sortable and mine %}
 Sortable.create(sortList, {
   animation: 150,
   onEnd: function (/**Event*/evt) {

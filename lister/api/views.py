@@ -7,7 +7,6 @@ from django.views.decorators.csrf import csrf_exempt
 from .utils import auth_required
 from lists.models import Lister, Item
 
-@csrf_exempt
 @auth_required
 def index(request, list_id):
     lister = Lister.objects.get(pk=list_id)
@@ -16,7 +15,6 @@ def index(request, list_id):
 
     return HttpResponse(data);
 
-@csrf_exempt
 @auth_required
 def random(request, list_id, option="default"):
     lister = Lister.objects.get(pk=list_id)

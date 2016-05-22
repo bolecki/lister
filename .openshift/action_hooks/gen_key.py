@@ -6,8 +6,8 @@ import string
 import random
 import os
 
-repo = os.environ['OPENSHIFT_REPO_DIR']
-path = repo + "/lister/lister/secrets.py"
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+path = BASE_DIR + "/../../lister/lister/secrets.py"
 
 # Get ascii Characters numbers and punctuation (minus quote characters as they could terminate string).
 chars = ''.join([string.ascii_letters, string.digits, string.punctuation]).replace('\'', '').replace('"', '').replace('\\', '')

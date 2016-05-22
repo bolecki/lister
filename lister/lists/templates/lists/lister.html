@@ -1,6 +1,6 @@
 {% load list_extras %}
 
-<div class="col-lg-6">
+<div class="col-lg-12">
     <div id="sortList" class="list-group">
         {% if items %}
             {% for item in items %}
@@ -30,83 +30,9 @@
         </div>
     </div>
     {% endif %}
-
-    <div class="edit panel panel-primary">
-        <div class="panel-heading">
-            <h3 class="panel-title">Edit List</h3>
-        </div>
-        <div class="panel-body">
-            <div class="row">
-                <div class="col-lg-6">
-                    <form role="form" action="{% url 'lists:lister' list_id %}" method="post">
-                        {% csrf_token %}
-                        <div class="form-group">
-                            <label>Add Item</label>
-                            <input class="form-control" type="text" name="add" id="add" placeholder="Item name" value="" />
-                        </div>
-                        <div class="form-group">
-                            <button class="btn btn-block btn-primary" type="submit">Add</button>
-                        </div>
-                    </form>
-                </div>
-                {% if mine %}
-                <div class="col-lg-6">
-                    <form role="form" action="{% url 'lists:grant' list_id %}" method="post">
-                        <label>Grant Users Access</label>
-                        <div class="form-group">
-                            {% csrf_token %}
-                            {{ grant_form }}
-                        </div>
-                        <div class="form-group">
-                            <button type="submit" class="btn btn-block btn-primary">Grant</button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-lg-6">
-                    <button type="submit" class="btn btn-block btn-danger" onclick="update({{ items.0.id }}, 'clear')">Clear Votes</button>
-                </div>
-            </div>
-            {% endif %}
-        </div>
-    </div>
 </div>
 <!-- /.col-sm-4 -->
-{% if num_votes %}
-<div class="col-lg-3 col-md-6">
-    <div class="panel panel-primary">
-        <div class="panel-heading">
-            <div class="row">
-                <div class="col-xs-3">
-                    <i class="fa fa-check-square fa-5x"></i>
-                </div>
-                <div class="col-xs-9 text-right">
-                    <div class="huge">{% if num_votes.votes__sum %}{{ num_votes.votes__sum }}{% else %}0{% endif %}</div>
-                    <div>Votes</div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-{% else %}
-<div class="col-lg-3 col-md-6"></div>
-{% endif %}
-<div class="col-lg-3 col-md-6">
-    <div class="panel panel-primary">
-        <div class="panel-heading">
-            <div class="row">
-                <div class="col-xs-3">
-                    <i class="fa fa-list fa-5x"></i>
-                </div>
-                <div class="col-xs-9 text-right">
-                    <div class="huge">{{ items|length }}</div>
-                    <div>Items</div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
+
 <script type="text/javascript">
 
 if($("#toggle-edit").html() == "Stop Editing"){

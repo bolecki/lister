@@ -1,4 +1,4 @@
-<div class="col-lg-6">
+<div class="col-lg-12">
     <div class="list-group">
         {% if lists %}
             {% for list in lists %}
@@ -11,47 +11,8 @@
             {% endfor %}
         {% endif %}
     </div>
-
-    <div class="row">
-        <div class="col-lg-6">
-            <div class="panel panel-primary">
-                <div class="panel-heading">
-                    <h3 class="panel-title">New List</h3>
-                </div>
-                <div class="panel-body">
-                    <form role="form" action="{% url 'lists:create' %}" method="post">
-                        <div class="form-group">
-                            {% csrf_token %}
-                            <table>
-                                {{ list_form.as_table }}
-                            </table>
-                        </div>
-                        <div class="form-group">
-                            <button type="submit" class="btn btn-xs btn-success">Create</button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
 </div>
 <!-- /.col-sm-4 -->
-<div class="col-lg-3 col-md-6"></div>
-<div class="col-lg-3 col-md-6">
-    <div class="panel panel-primary">
-            <div class="panel-heading">
-            <div class="row">
-                <div class="col-xs-3">
-                    <i class="fa fa-list fa-5x"></i>
-                </div>
-                <div class="col-xs-9 text-right">
-                    <div class="huge">{{ lists|length }}</div>
-                    <div>Lists</div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
 
 <script type="text/javascript">
 $(".close").click(function(e){

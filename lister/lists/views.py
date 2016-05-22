@@ -18,6 +18,7 @@ from .models import Lister, Item
 def index(request):
     lists = Lister.objects.filter(public=True)
     login_form = LoginForm()
+    list_form = CreateListForm(authenticated=request.user.is_authenticated())
 
     storage = messages.get_messages(request)
 
@@ -29,7 +30,8 @@ def index(request):
 
     context = {
         'lists': lists,
-        'login_form': login_form
+        'login_form': login_form,
+        'list_form': list_form
     }
 
     if request.user.is_authenticated():
@@ -40,7 +42,6 @@ def index(request):
 
 def part_index(request, selection):
     mine = False
-    list_form = CreateListForm(authenticated=request.user.is_authenticated())
 
     if selection == "mylists":
         mine = True
@@ -51,7 +52,6 @@ def part_index(request, selection):
         lists = Lister.objects.filter(public=True)
 
     context = {
-        'list_form': list_form,
         'lists': lists,
         'mine': mine
     }
@@ -220,10 +220,15 @@ def lister(request, list_id):
         if request.user == lister.user:
             mine = True
 
+        login_form = LoginForm()
+        grant_form = GrantForm()
+
         context = {
             'items': items,
             'list_id': list_id,
             'lister': lister.list_name,
+            'login_form': login_form,
+            'grant_form': grant_form,
             'voted': voted,
             'mine': mine,
             'sortable': lister.sortable
@@ -274,15 +279,10 @@ def part(request, list_id):
     if request.user == lister.user:
         mine = True
 
-    login_form = LoginForm()
-    grant_form = GrantForm()
-
     context = {
         'items': items,
         'list_id': list_id,
         'lister': lister.list_name,
-        'login_form': login_form,
-        'grant_form': grant_form,
         'num_votes': num_votes,
         'voted': voted,
         'mine': mine,

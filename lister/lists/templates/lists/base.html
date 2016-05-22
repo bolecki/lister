@@ -98,7 +98,7 @@
                     </li>
                     {% if user.is_authenticated %}
                     <li {% if mine %}class="active"{% endif %}>
-                        <a href="{% url 'lists:user_lists' %}"><i class="fa fa-fw fa-edit"></i> Your Lists</a>
+                        <a href="{% url 'lists:index' selection='mylists' %}"><i class="fa fa-fw fa-edit"></i> Your Lists</a>
                     </li>
                     {% endif %}
                 </ul>

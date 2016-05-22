@@ -15,7 +15,7 @@ from django.contrib.auth.models import User, Group
 from django.contrib.sessions.models import Session
 from .models import Lister, Item
 
-def index(request):
+def index(request, selection=''):
     '''
         Landing page for all users.
 
@@ -38,9 +38,15 @@ def index(request):
             if "login_attempt" in message.extra_tags:
                 login_form = LoginForm(login_attempt=message.message)
 
+    mine = False
+
+    if selection == "mylists":
+        mine = True
+
     context = {
         'login_form': login_form,
-        'list_form': list_form
+        'list_form': list_form,
+        'mine': mine
     }
 
     return render(request, 'lists/index.html', context)
@@ -71,32 +77,6 @@ def index_part(request, selection):
     return render(request, 'lists/index_part.html', context)
 
 
-#TODO remove this route
-def user_lists(request):
-    '''
-        Return same template as index, but with user lists
-        instead of public lists.
-
-        This route should be removed by providing a url
-        parameter to the index route, indicating whether
-        to return public or private lists.  Especially
-        now that the lists are provided by index_part.
-    '''
-    if not request.user.is_authenticated():
-        return HttpResponseRedirect(reverse('lists:index'))
-
-    lists = request.user.lister_set.all()
-
-    list_form = CreateListForm(authenticated=request.user.is_authenticated())
-    context = {
-        'lists': lists,
-        'list_form': list_form,
-        'mine': True
-    }
-
-    return render(request, 'lists/index.html', context)
-
-
 def login_user(request):
     '''Authenticate user and redirect to index.'''
     if request.method == 'POST':
@@ -114,7 +94,7 @@ def login_user(request):
                 if user is not None:
                     login(request, user)
 
-                    return HttpResponseRedirect(reverse('lists:user_lists'))
+                    return HttpResponseRedirect(reverse('lists:index', args=('mylists',)))
 
                 else:
                     messages.info(request, username, extra_tags='login_attempt')

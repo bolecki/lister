@@ -75,6 +75,7 @@ def index_part(request, selection):
     return render(request, 'lists/index_part.html', context)
 
 
+#TODO remove this route
 def user_lists(request):
     '''
         Return same template as index, but with user lists
@@ -131,6 +132,7 @@ def login_user(request):
     return HttpResponseRedirect(reverse('lists:index'))
 
 
+#TODO rename to register_user for clarity
 def register(request):
     '''Register, authenticate, and redirect user to index.'''
     if request.method == 'GET':
@@ -170,6 +172,7 @@ def register(request):
     return HttpResponseRedirect(reverse('lists:index'))
 
 
+#TODO rename to create_lister for clarity
 def create(request):
     '''Create a new list.'''
     if request.method == "POST":
@@ -202,6 +205,7 @@ def create(request):
     return HttpResponseRedirect(reverse('lists:index'))
 
 
+#TODO rename to grant_users for clarity
 @auth_required
 def grant(request, list_id):
     '''
@@ -298,6 +302,7 @@ def lister(request, list_id):
         return HttpResponseRedirect(reverse('lists:lister', args=(list_id,)))
 
 
+#TODO rename to lister_part for clarity
 @auth_required
 def part(request, list_id):
     '''
@@ -393,6 +398,7 @@ def vote(request, list_id, item_id, action):
     return HttpResponseRedirect(reverse('lists:part', args=(list_id,)))
 
 
+# TODO rename to sort_items for clarity
 @csrf_exempt
 @auth_required
 def sort(request, list_id, old_index, new_index):
@@ -435,6 +441,7 @@ def sort(request, list_id, old_index, new_index):
     return HttpResponseRedirect(reverse('lists:part', args=(list_id,)))
 
 
+#TODO rename to delete_lister for clarity
 @csrf_exempt
 @auth_required
 def delete(request, list_id):
@@ -446,6 +453,7 @@ def delete(request, list_id):
     return HttpResponseRedirect(reverse('lists:index_part', args=("mylists",)))
 
 
+#TODO rename to clear_votes for clarity
 @csrf_exempt
 @auth_required
 def clear(request, list_id):

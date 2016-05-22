@@ -11,13 +11,13 @@ function update(id, action){
   url = url.replace('12345', id);
   url = url.replace('abcdef', action);
 
-  $.post(url, function(data){
+  $.post(url, { "csrfmiddlewaretoken": '{{ csrf_token }}' }, function(data){
     $("#lister-items").html(data);
   });
 }
 
 function reset(){
-  $.post("{% url 'lists:clear' list_id=list_id %}", function(data){
+  $.post("{% url 'lists:clear' list_id=list_id %}", { "csrfmiddlewaretoken": '{{ csrf_token }}' }, function(data){
     $("#lister-items").html(data);
   });
 }

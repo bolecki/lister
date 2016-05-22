@@ -320,7 +320,6 @@ def lister_part(request, list_id):
     return render(request, 'lists/lister_part.html', context)
 
 
-@csrf_exempt
 @auth_required
 def vote(request, list_id, item_id, action):
     '''
@@ -370,7 +369,6 @@ def vote(request, list_id, item_id, action):
     return HttpResponseRedirect(reverse('lists:lister_part', args=(list_id,)))
 
 
-@csrf_exempt
 @auth_required
 def sort(request, list_id, old_index, new_index):
     '''
@@ -412,7 +410,6 @@ def sort(request, list_id, old_index, new_index):
     return HttpResponseRedirect(reverse('lists:lister_part', args=(list_id,)))
 
 
-@csrf_exempt
 @auth_required
 def delete(request, list_id):
     '''Remove an entire list by list_id.'''
@@ -423,7 +420,6 @@ def delete(request, list_id):
     return HttpResponseRedirect(reverse('lists:index_part', args=("mylists",)))
 
 
-@csrf_exempt
 @auth_required
 def clear(request, list_id):
     '''Clear all of the votes from a list by list_id.'''

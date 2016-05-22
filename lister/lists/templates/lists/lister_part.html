@@ -52,7 +52,7 @@ Sortable.create(sortList, {
     url = url.replace('99999', evt.oldIndex);
     url = url.replace('99998', evt.newIndex);
 
-    $.post(url, function(){});
+    $.post(url, { "csrfmiddlewaretoken": '{{ csrf_token }}' }, function(){});
   },
 });
 

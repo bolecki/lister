@@ -8,7 +8,7 @@ function deleteList(id){
 
   url = url.replace('12345', id);
 
-  $.post(url, function(data){
+  $.post(url, { "csrfmiddlewaretoken": '{{ csrf_token }}' }, function(data){
     $("#listers").html(data);
   });
 }

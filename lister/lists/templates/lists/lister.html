@@ -71,7 +71,9 @@ function reset(){
                             </div>
                         </form>
                     </div>
+                    {% endif %}
                 </div>
+                {% if not sortable and mine %}
                 <div class="row">
                     <div class="col-lg-6">
                         <button type="submit" class="btn btn-block btn-danger" onclick="reset()">Clear Votes</button>

@@ -16,7 +16,20 @@ from django.contrib.sessions.models import Session
 from .models import Lister, Item
 
 def index(request):
+    '''
+        Landing page for all users.
+
+        Display all public lists and allow users
+        to create new lists.  Anonymous users
+        will be limited in their options to create
+        new lists.
+
+        List data will be populated through ajax
+        calls to the index_part function below.
+    '''
+    # Grab all public lists
     lists = Lister.objects.filter(public=True)
+
     login_form = LoginForm()
     list_form = CreateListForm(authenticated=request.user.is_authenticated())
 
@@ -34,13 +47,16 @@ def index(request):
         'list_form': list_form
     }
 
-    if request.user.is_authenticated():
-        context['user'] = request.user
-
     return render(request, 'lists/login.html', context)
 
 
-def part_index(request, selection):
+def index_part(request, selection):
+    '''
+        Return up to date list data for the index page.
+
+        :param selection: indicates whether to return public or user lists
+        :type selection: string
+    '''
     mine = False
 
     if selection == "mylists":
@@ -60,6 +76,15 @@ def part_index(request, selection):
 
 
 def user_lists(request):
+    '''
+        Return same template as index, but with user lists
+        instead of public lists.
+
+        This route should be removed by providing a url
+        parameter to the index route, indicating whether
+        to return public or private lists.  Especially
+        now that the lists are provided by index_part.
+    '''
     if not request.user.is_authenticated():
         return HttpResponseRedirect(reverse('lists:index'))
 
@@ -69,7 +94,6 @@ def user_lists(request):
     context = {
         'lists': lists,
         'list_form': list_form,
-        'user': request.user,
         'mine': True
     }
 
@@ -77,6 +101,7 @@ def user_lists(request):
 
 
 def login_user(request):
+    '''Authenticate user and redirect to index.'''
     if request.method == 'POST':
         login_form = LoginForm(request.POST)
 
@@ -107,6 +132,7 @@ def login_user(request):
 
 
 def register(request):
+    '''Register, authenticate, and redirect user to index.'''
     if request.method == 'GET':
         login_form = LoginForm()
         context = {'login_form': login_form}
@@ -120,6 +146,7 @@ def register(request):
             username = login_form.cleaned_data['user']
             password = login_form.cleaned_data['password']
 
+            # Create new user
             if User.objects.filter(username=username).count() == 0:
                 user = User(username=username)
                 user.set_password(password)
@@ -135,6 +162,7 @@ def register(request):
                 messages.error(request, 'User already exists - please select another name')
                 return HttpResponseRedirect(reverse('lists:register'))
 
+        # Invalid form input
         else:
             context = {'login_form': login_form}
             return render(request, 'lists/register.html', context)
@@ -143,6 +171,7 @@ def register(request):
 
 
 def create(request):
+    '''Create a new list.'''
     if request.method == "POST":
         form = CreateListForm(request.POST)
 
@@ -156,9 +185,11 @@ def create(request):
             if request.user.is_authenticated():
                 user = request.user
 
+            # Create and save list
             lister = Lister(list_name=name, public=public, sortable=sortable, user=user)
             lister.save()
 
+            # Create a group for the list and add the creator if auth
             group_name = "lister-{pk}".format(pk=lister.pk)
             group = Group(name=group_name)
             group.save()
@@ -173,6 +204,12 @@ def create(request):
 
 @auth_required
 def grant(request, list_id):
+    '''
+        Grant users access to a list.
+
+        :param list_id: id of the list to grant access
+        :type list_id: string
+    '''
     lister = Lister.objects.get(pk=list_id)
 
     if request.method == "POST":
@@ -180,11 +217,16 @@ def grant(request, list_id):
 
         if form.is_valid():
             users_text = form.cleaned_data['users']
+
+            # Split on commas to allow multiple usernames
             users_list = users_text.split(",")
 
+            # Get the group
             group_name = "lister-{pk}".format(pk=lister.pk)
             group = Group.objects.get(name=group_name)
 
+            # Loop over usernames and attempt to add to group
+            # Errors will display on the following page
             for username in users_list:
                 try:
                     user = User.objects.get(username=username.strip())
@@ -197,9 +239,25 @@ def grant(request, list_id):
 
 @auth_required
 def lister(request, list_id):
+    '''
+        Display the contents of individual lists.
+
+        This page will allow the user to view the entries
+        in a list.  THe user will also be able to vote,
+        sort, add items, and grant permission to other users
+        depending on ownership and access.
+
+        Item data will be populated through ajax
+        calls to the index_part function below.
+
+        :param list_id: id of the list to display
+        :type list_id: string
+    '''
     lister = Lister.objects.get(pk=list_id)
 
     if request.method == 'GET':
+        # TODO part route will sort - remove this segment
+        # Order list depending on type
         if lister.sortable:
             items = lister.item_set.all().order_by('votes')
         else:
@@ -207,6 +265,8 @@ def lister(request, list_id):
 
         voted = None
 
+        # Determine if the user has already voted.  This will attempt
+        # logged in user as well as well as anonymous sessions.
         for item in items:
             if request.user.is_authenticated():
                 if item.users.filter(pk=request.user.pk).exists():
@@ -239,14 +299,20 @@ def lister(request, list_id):
     elif request.method == 'POST':
         text = request.POST['add']
 
+        # Add item to the list
         if text != "":
             if lister.sortable:
+
+                # First item in sortable should be index 1
                 if lister.item_set.all().count() == 0:
                     lister.item_set.create(item_text=text, votes=1)
+
+                # If not first, index is one more than current max
                 else:
                     rank = lister.item_set.all().aggregate(Max('votes'))['votes__max'] + 1
                     lister.item_set.create(item_text=text, votes=rank)
 
+            # Regular list items start with 0 votes
             else:
                 lister.item_set.create(item_text=text, votes=0)
 
@@ -255,6 +321,12 @@ def lister(request, list_id):
 
 @auth_required
 def part(request, list_id):
+    '''
+        Return up to date item data for the lister page.
+
+        :param list_id: id of the list to display
+        :type list_id: string
+    '''
     lister = Lister.objects.get(pk=list_id)
 
     num_votes = None
@@ -266,6 +338,7 @@ def part(request, list_id):
         items = lister.item_set.all().order_by('-votes')
         num_votes = items.aggregate(Sum('votes'))
 
+    # TODO duplicate code with previous section - move to utility function
     for item in items:
         if request.user.is_authenticated():
             if item.users.filter(pk=request.user.pk).exists():
@@ -295,22 +368,38 @@ def part(request, list_id):
 @csrf_exempt
 @auth_required
 def vote(request, list_id, item_id, action):
+    '''
+        Process actions on list votes.
+
+        Allow users to upvote, downvote, delete items,
+        and clear votes.  Votes will store session or
+        user data in the items in order to persist.
+
+        :param list_id: id of the list that contains the item
+        :type list_id: string
+        :param item_id: id of the item to perform action
+        :type item_id: string
+        :param action: type of action to perform on the item
+        :type action: string
+    '''
     item = get_object_or_404(Item, pk=item_id)
     lister = Lister.objects.get(pk=list_id)
 
     if action == "up":
         item.votes += 1
 
+        # Add user or anonymous session to item for persistence
         if request.user.is_authenticated():
             item.users.add(request.user)
         else:
-            request.session.save()
+            request.session.save() # session_key is invalid unless saved
             session = Session.objects.get(session_key=request.session.session_key)
             item.sessions.add(session)
 
     elif action == "down" and item.votes > 0:
         item.votes -= 1
 
+        # Remove user or anonymous session from item
         if request.user.is_authenticated():
             item.users.remove(request.user)
         else:
@@ -337,20 +426,40 @@ def vote(request, list_id, item_id, action):
 @csrf_exempt
 @auth_required
 def sort(request, list_id, old_index, new_index):
+    '''
+        Reorder sortable lists in the database.
+
+        Take the old and new index returned from the Sortable
+        object and update list votes accordingly.
+
+        Index values start at 0, but list votes start at 1.
+        All logic includes +1 indexing for votes.
+
+        :param list_id: id of the list to be sorted
+        :type list_id: string
+        :param old_index: 0 base index of where the item is
+        :type old_index: string
+        :param new_index: 0 base index of where the item should be placed
+        :type new_index: string
+    '''
     old_index = int(old_index)
     new_index = int(new_index)
 
     if request.method == "POST":
         lister = Lister.objects.get(pk=list_id)
 
+        # Temporarily set the old index to 0.  This prevents
+        # accidental updates in the filter ranges below
         lister.item_set.filter(votes=old_index+1).update(votes=0)
 
+        # Update ranges depending on which index is greater
         if old_index > new_index:
             lister.item_set.filter(votes__range=(new_index+1,old_index)).update(votes=F('votes') + 1)
 
         else:
             lister.item_set.filter(votes__range=(old_index+2,new_index+1)).update(votes=F('votes') - 1)
 
+        # Update the item that was moved and temporarily set to 0
         lister.item_set.filter(votes=0).update(votes=new_index+1)
 
     return HttpResponseRedirect(reverse('lists:part', args=(list_id,)))
@@ -359,12 +468,14 @@ def sort(request, list_id, old_index, new_index):
 @csrf_exempt
 @auth_required
 def delete(request, list_id):
+    '''Remove an entire list by list_id.'''
     if request.method == "POST":
         lister = Lister.objects.get(pk=list_id)
         lister.delete()
 
-    return HttpResponseRedirect(reverse('lists:part_index', args=("mylists",)))
+    return HttpResponseRedirect(reverse('lists:index_part', args=("mylists",)))
 
 
 def api(request):
+    '''Display page to generate API token.'''
     return render(request, 'lists/api.html')

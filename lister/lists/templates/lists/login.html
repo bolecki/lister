@@ -76,9 +76,9 @@ function hyperdiv(id){
 
 {% block endscript %}
   {% if mine %}
-    var url="{% url 'lists:part_index' selection='mylists' %}";
+    var url="{% url 'lists:index_part' selection='mylists' %}";
   {% else %}
-    var url="{% url 'lists:part_index' selection='public' %}";
+    var url="{% url 'lists:index_part' selection='public' %}";
   {% endif %}
 
   $.get(url, function(data){

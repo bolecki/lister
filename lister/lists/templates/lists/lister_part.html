@@ -18,6 +18,10 @@
                     <span title="{{ item.users.all|usernames }}"> {{ item.votes }} {{ item.item_text }}</span>
                 </div>
             {% endfor %}
+        {% else %}
+            <div class="alert alert-info alert-dissmissable">
+                <strong>There are no items!</strong> Click the orange edit button at the top of the page in order to create items!
+            </div>
         {% endif %}
     </div>
     {% if not sortable %}

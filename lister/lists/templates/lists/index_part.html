@@ -9,6 +9,10 @@
                     {% endif %}
                 </div>
             {% endfor %}
+        {% else %}
+            <div class="alert alert-info alert-dissmissable">
+                <strong>There are no lists!</strong> Create a list using the form on the right side of this page!
+            </div>
         {% endif %}
     </div>
 </div>

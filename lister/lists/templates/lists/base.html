@@ -138,6 +138,9 @@
     <script src="{% static 'lists/bootstrap.min.js' %}"></script>
 
     <script type="text/javascript">
+    $(".alert .close").click(function(){
+      $(this).parent().hide(200);
+    });
     {% block endscript %}{% endblock %}
     </script>
 

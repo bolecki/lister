@@ -27,9 +27,6 @@ def index(request):
         List data will be populated through ajax
         calls to the index_part function below.
     '''
-    # Grab all public lists
-    lists = Lister.objects.filter(public=True)
-
     login_form = LoginForm()
     list_form = CreateListForm(authenticated=request.user.is_authenticated())
 
@@ -42,7 +39,6 @@ def index(request):
                 login_form = LoginForm(login_attempt=message.message)
 
     context = {
-        'lists': lists,
         'login_form': login_form,
         'list_form': list_form
     }

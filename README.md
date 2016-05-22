@@ -46,12 +46,28 @@ cd lister
 # Run HTTP server
 nohup python manage.py runserver 0.0.0.0:8080 &
 
-# Run HTTPS server
+# Alternatively, run HTTPS server instead
 nohup python manage.py runsslserver 0.0.0.0:8080 &
 ```
 
 ## Openshift
 To run this application under openshift, simply create a new application with a Django cartridge.  Set the source code to this repository, "https://github.com/bolecki/lister.git", and optionally select scaling.
 
+From the rhc client, set the wsgi app environment variable to point to the Django wsgi.py file.  The full path will depend on the app uuid.  Make sure to replace the appname and uuid in the final command.
+
+```bash
+# Grab the uuid
+rhc domain show | grep uuid
+appname @ http://appname-domain.rhcloud.com/ (uuid: xxxxxxxxxxxxxxxxxxxxxxxx)
+
+# Set the env variable
+rhc env set OPENSHIFT_PYTHON_WSGI_APPLICATION='/var/lib/openshift/xxxxxxxxxxxxxxxxxxxxxxxx/app-root/repo/lister/lister/wsgi.py' --app appname
+```
+
 # TODO
 1. Instructions for Apache/Nginx configuration
+2. Add more api endpoints
+3. Add more list types
+4. Handle CSRF cookies
+5. Add test cases
+6. Add travis CI integration

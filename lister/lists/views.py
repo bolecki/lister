@@ -256,25 +256,6 @@ def lister(request, list_id):
     lister = Lister.objects.get(pk=list_id)
 
     if request.method == 'GET':
-        # TODO part route will sort - remove this segment
-        # Order list depending on type
-        if lister.sortable:
-            items = lister.item_set.all().order_by('votes')
-        else:
-            items = lister.item_set.all().order_by('-votes')
-
-        voted = None
-
-        # Determine if the user has already voted.  This will attempt
-        # logged in user as well as well as anonymous sessions.
-        for item in items:
-            if request.user.is_authenticated():
-                if item.users.filter(pk=request.user.pk).exists():
-                    voted = item.item_text
-            else:
-                if item.sessions.filter(session_key=request.session.session_key).exists():
-                    voted = item.item_text
-
         mine = False
 
         if request.user == lister.user:
@@ -284,12 +265,10 @@ def lister(request, list_id):
         grant_form = GrantForm()
 
         context = {
-            'items': items,
             'list_id': list_id,
             'lister': lister.list_name,
             'login_form': login_form,
             'grant_form': grant_form,
-            'voted': voted,
             'mine': mine,
             'sortable': lister.sortable
         }
@@ -338,7 +317,6 @@ def part(request, list_id):
         items = lister.item_set.all().order_by('-votes')
         num_votes = items.aggregate(Sum('votes'))
 
-    # TODO duplicate code with previous section - move to utility function
     for item in items:
         if request.user.is_authenticated():
             if item.users.filter(pk=request.user.pk).exists():
@@ -371,9 +349,9 @@ def vote(request, list_id, item_id, action):
     '''
         Process actions on list votes.
 
-        Allow users to upvote, downvote, delete items,
-        and clear votes.  Votes will store session or
-        user data in the items in order to persist.
+        Allow users to upvote, downvote, and delete items.
+        Votes will store session or user data in the items
+        in order to persist.
 
         :param list_id: id of the list that contains the item
         :type list_id: string
@@ -406,16 +384,8 @@ def vote(request, list_id, item_id, action):
             session = Session.objects.get(session_key=request.session.session_key)
             item.sessions.remove(session)
 
-    elif action == "clear":
-        items = lister.item_set.all()
-        items.update(votes=0)
-        [x.users.clear() for x in items]
-
     if action == "delete":
         item.delete()
-
-    elif action == "clear":
-        pass
 
     else:
         item.save()
@@ -474,6 +444,19 @@ def delete(request, list_id):
         lister.delete()
 
     return HttpResponseRedirect(reverse('lists:index_part', args=("mylists",)))
+
+
+@csrf_exempt
+@auth_required
+def clear(request, list_id):
+    '''Clear all of the votes from a list by list_id.'''
+    lister = Lister.objects.get(pk=list_id)
+    items = lister.item_set.all()
+    items.update(votes=0)
+    [x.users.clear() for x in items]
+    [x.sessions.clear() for x in items]
+
+    return HttpResponseRedirect(reverse('lists:part', args=(list_id,)))
 
 
 def api(request):

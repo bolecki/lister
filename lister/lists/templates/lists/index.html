@@ -15,6 +15,12 @@ function update(id, action){
     $("#lister-items").html(data);
   });
 }
+
+function reset(){
+  $.post("{% url 'lists:clear' list_id=list_id %}", function(data){
+    $("#lister-items").html(data);
+  });
+}
 {% endblock %}
 
 {% block content %}
@@ -68,7 +74,7 @@ function update(id, action){
                 </div>
                 <div class="row">
                     <div class="col-lg-6">
-                        <button type="submit" class="btn btn-block btn-danger" onclick="update({{ items.0.id }}, 'clear')">Clear Votes</button>
+                        <button type="submit" class="btn btn-block btn-danger" onclick="reset()">Clear Votes</button>
                     </div>
                 </div>
                 {% endif %}

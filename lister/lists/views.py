@@ -47,7 +47,7 @@ def index(request):
         'list_form': list_form
     }
 
-    return render(request, 'lists/login.html', context)
+    return render(request, 'lists/index.html', context)
 
 
 def index_part(request, selection):
@@ -98,7 +98,7 @@ def user_lists(request):
         'mine': True
     }
 
-    return render(request, 'lists/login.html', context)
+    return render(request, 'lists/index.html', context)
 
 
 def login_user(request):
@@ -277,7 +277,7 @@ def lister(request, list_id):
             'sortable': lister.sortable
         }
 
-        return render(request, 'lists/index.html', context)
+        return render(request, 'lists/lister.html', context)
 
     elif request.method == 'POST':
         text = request.POST['add']
@@ -345,7 +345,7 @@ def part(request, list_id):
         'sortable': lister.sortable
     }
 
-    return render(request, 'lists/lister.html', context)
+    return render(request, 'lists/lister_part.html', context)
 
 
 @csrf_exempt

@@ -1,115 +1,87 @@
 {% extends 'lists/base.html' %}
 
-{% load staticfiles %}
-
-{% block title %}{{ lister }}{% endblock %}
+{% block title %}Lister{% endblock %}
 
 {% block startscript %}
-function update(id, action){
-  var url = "{% url 'lists:vote' list_id=list_id item_id=12345 action='abcdef' %}";
+function deleteList(id){
+  var url = "{% url 'lists:delete' list_id=12345 %}";
 
   url = url.replace('12345', id);
-  url = url.replace('abcdef', action);
 
   $.post(url, function(data){
-    $("#lister-items").html(data);
+    $("#listers").html(data);
   });
 }
 
-function reset(){
-  $.post("{% url 'lists:clear' list_id=list_id %}", function(data){
-    $("#lister-items").html(data);
-  });
+function hyperdiv(id){
+  var url = "{% url 'lists:lister' list_id=12345 %}";
+
+  url = url.replace('12345', id);
+
+  window.location.href = url;
 }
+
 {% endblock %}
 
 {% block content %}
 <div class="page-header">
-    <h1>{{ lister }}   <button class="btn btn-xs btn-warning" type="button" id="toggle-edit">Edit</button></h1>
+    {% if not mine %}
+    <h1>Public Lists</h1>
+    {% else %}
+    <h1>Your Lists</h1>
+    {% endif %}
 </div>
-
 <div class="row">
-    <div class="col-lg-3 col-md-6">
-        <h4 id="selected"></h4>
-    </div>
-</div>
-
-<div class="row">
-    <div class="col-lg-6" id="lister-items">
+    <div class="col-lg-6" id="listers">
         Loading...
     </div>
-
-    <div class="col-lg-6">
-        <div class="edit panel panel-primary">
+    <div class="col-lg-3">
+        <div class="panel panel-primary">
             <div class="panel-heading">
-                <h3 class="panel-title">Edit List</h3>
+                <h3 class="panel-title">New List</h3>
             </div>
             <div class="panel-body">
-                <div class="row">
-                    <div class="col-lg-6">
-                        <form role="form" action="{% url 'lists:lister' list_id %}" method="post">
-                            {% csrf_token %}
-                            <div class="form-group">
-                                <label>Add Item</label>
-                                <input class="form-control" type="text" name="add" id="add" placeholder="Item name" value="" />
-                            </div>
-                            <div class="form-group">
-                                <button class="btn btn-block btn-primary" type="submit">Add</button>
-                            </div>
-                        </form>
+                <form role="form" action="{% url 'lists:create' %}" method="post">
+                    <div class="form-group">
+                        {% csrf_token %}
+                        <table>
+                            {{ list_form.as_table }}
+                        </table>
                     </div>
-                    {% if mine %}
-                    <div class="col-lg-6">
-                        <form role="form" action="{% url 'lists:grant' list_id %}" method="post">
-                            <label>Grant Users Access</label>
-                            <div class="form-group">
-                                {% csrf_token %}
-                                {{ grant_form }}
-                            </div>
-                            <div class="form-group">
-                                <button type="submit" class="btn btn-block btn-primary">Grant</button>
-                            </div>
-                        </form>
+                    <div class="form-group">
+                        <button type="submit" class="btn btn-block btn-success">Create</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-3 col-md-6">
+        <div class="panel panel-primary">
+                <div class="panel-heading">
+                <div class="row">
+                    <div class="col-xs-3">
+                        <i class="fa fa-list fa-5x"></i>
+                    </div>
+                    <div class="col-xs-9 text-right">
+                        <div class="huge">{{ lists|length }}</div>
+                        <div>Lists</div>
                     </div>
                 </div>
-                <div class="row">
-                    <div class="col-lg-6">
-                        <button type="submit" class="btn btn-block btn-danger" onclick="reset()">Clear Votes</button>
-                    </div>
-                </div>
-                {% endif %}
             </div>
         </div>
     </div>
 </div>
-
-<script src="{% static 'lists/sortable.min.js' %}"></script>
-
 {% endblock %}
 
+
 {% block endscript %}
-$(document).ready(function(){
-  $.get("{% url 'lists:part' list_id=list_id %}", function(data){
-    $("#lister-items").html(data);
+  {% if mine %}
+    var url="{% url 'lists:index_part' selection='mylists' %}";
+  {% else %}
+    var url="{% url 'lists:index_part' selection='public' %}";
+  {% endif %}
+
+  $.get(url, function(data){
+    $("#listers").html(data);
   });
-
-  $("#toggle-edit").click(function(){
-    if($("#toggle-edit").html() == 'Edit'){
-      $(".edit").show(400);
-      $("#toggle-edit").html("Stop Editing");
-    }else{
-      $(".edit").hide(400);
-      $("#toggle-edit").html("Edit");
-    }
-  });
-
-  (function poll() {
-    setTimeout(function() {
-      $.ajax({ url: "{% url 'lists:part' list_id=list_id %}", success: function(data) {
-        $("#lister-items").html(data);
-      }, complete: poll });
-    }, 10000);
-  })();
-
-});
 {% endblock %}

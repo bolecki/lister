@@ -1,73 +1,115 @@
-{% load list_extras %}
+{% extends 'lists/base.html' %}
 
-<div class="col-lg-12">
-    <div id="sortList" class="list-group">
-        {% if items %}
-            {% for item in items %}
-                <div class="list-group-item">
-                    <button class="close edit" onclick="update({{ item.id }}, 'delete')" type=submit>&times;</button>
-                    {% if not voted %}
-                        {% if not sortable %}
-                        <button class="btn btn-xs btn-primary fa fa-arrow-up vote up-vote" onclick="update({{ item.id }}, 'up')" type=submit></button>
-                        {% endif %}
-                    {% else %}
-                        {% if item.item_text == voted %}
-                            <button class="btn btn-xs btn-danger fa fa-arrow-down vote down-vote" onclick="update({{ item.id }}, 'down')" type=submit></button>
-                        {% endif %}
-                    {% endif %}
-                    <span title="{{ item.users.all|usernames }}"> {{ item.votes }} {{ item.item_text }}</span>
-                </div>
-            {% endfor %}
-        {% endif %}
-    </div>
-    {% if not sortable %}
-    <div class="row">
-        <div class="col-md-6 form-group">
-            <button class="btn btn-xs btn-primary" id="random">Random</button>
-            {% if items.0.votes == items.1.votes %}
-                <button class="btn btn-xs btn-primary" id="tie-breaker">Tie Breaker</button>
-            {% endif %}
-        </div>
-    </div>
-    {% endif %}
-</div>
-<!-- /.col-sm-4 -->
+{% load staticfiles %}
 
-<script type="text/javascript">
+{% block title %}{{ lister }}{% endblock %}
 
-if($("#toggle-edit").html() == "Stop Editing"){
-  $(".edit").show();
+{% block startscript %}
+function update(id, action){
+  var url = "{% url 'lists:vote' list_id=list_id item_id=12345 action='abcdef' %}";
+
+  url = url.replace('12345', id);
+  url = url.replace('abcdef', action);
+
+  $.post(url, function(data){
+    $("#lister-items").html(data);
+  });
 }
 
-{% if sortable and mine %}
-Sortable.create(sortList, {
-  animation: 150,
-  onEnd: function (/**Event*/evt) {
-    var url = "{% url 'lists:sort' list_id=list_id old_index=99999 new_index=99998 %}";
-
-    url = url.replace('99999', evt.oldIndex);
-    url = url.replace('99998', evt.newIndex);
-
-    $.post(url, function(){});
-  },
-});
-
-{% else %}
-
-var randomText = "Random: ";
-
-$("#random").click(function(){
-  $("#selected").html("Loading...");
-  $.get("{% url 'api:random' list_id=list_id %}", function(data){
-    $("#selected").html(randomText + data);
+function reset(){
+  $.post("{% url 'lists:clear' list_id=list_id %}", function(data){
+    $("#lister-items").html(data);
   });
-});
+}
+{% endblock %}
 
-$("#tie-breaker").click(function(){
-  $("#selected").html("Loading...");
-  $.get("{% url 'api:random' list_id=list_id option='tie' %}", function(data){
-    $("#selected").html(randomText + data);
+{% block content %}
+<div class="page-header">
+    <h1>{{ lister }}   <button class="btn btn-xs btn-warning" type="button" id="toggle-edit">Edit</button></h1>
+</div>
+
+<div class="row">
+    <div class="col-lg-3 col-md-6">
+        <h4 id="selected"></h4>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-6" id="lister-items">
+        Loading...
+    </div>
+
+    <div class="col-lg-6">
+        <div class="edit panel panel-primary">
+            <div class="panel-heading">
+                <h3 class="panel-title">Edit List</h3>
+            </div>
+            <div class="panel-body">
+                <div class="row">
+                    <div class="col-lg-6">
+                        <form role="form" action="{% url 'lists:lister' list_id %}" method="post">
+                            {% csrf_token %}
+                            <div class="form-group">
+                                <label>Add Item</label>
+                                <input class="form-control" type="text" name="add" id="add" placeholder="Item name" value="" />
+                            </div>
+                            <div class="form-group">
+                                <button class="btn btn-block btn-primary" type="submit">Add</button>
+                            </div>
+                        </form>
+                    </div>
+                    {% if mine %}
+                    <div class="col-lg-6">
+                        <form role="form" action="{% url 'lists:grant' list_id %}" method="post">
+                            <label>Grant Users Access</label>
+                            <div class="form-group">
+                                {% csrf_token %}
+                                {{ grant_form }}
+                            </div>
+                            <div class="form-group">
+                                <button type="submit" class="btn btn-block btn-primary">Grant</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-lg-6">
+                        <button type="submit" class="btn btn-block btn-danger" onclick="reset()">Clear Votes</button>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="{% static 'lists/sortable.min.js' %}"></script>
+
+{% endblock %}
+
+{% block endscript %}
+$(document).ready(function(){
+  $.get("{% url 'lists:part' list_id=list_id %}", function(data){
+    $("#lister-items").html(data);
   });
+
+  $("#toggle-edit").click(function(){
+    if($("#toggle-edit").html() == 'Edit'){
+      $(".edit").show(400);
+      $("#toggle-edit").html("Stop Editing");
+    }else{
+      $(".edit").hide(400);
+      $("#toggle-edit").html("Edit");
+    }
+  });
+
+  (function poll() {
+    setTimeout(function() {
+      $.ajax({ url: "{% url 'lists:part' list_id=list_id %}", success: function(data) {
+        $("#lister-items").html(data);
+      }, complete: poll });
+    }, 10000);
+  })();
+
 });
-{% endif %}
-</script>
+{% endblock %}

@@ -89,7 +89,7 @@ function reset(){
 
 {% block endscript %}
 $(document).ready(function(){
-  $.get("{% url 'lists:part' list_id=list_id %}", function(data){
+  $.get("{% url 'lists:lister_part' list_id=list_id %}", function(data){
     $("#lister-items").html(data);
   });
 
@@ -105,7 +105,7 @@ $(document).ready(function(){
 
   (function poll() {
     setTimeout(function() {
-      $.ajax({ url: "{% url 'lists:part' list_id=list_id %}", success: function(data) {
+      $.ajax({ url: "{% url 'lists:lister_part' list_id=list_id %}", success: function(data) {
         $("#lister-items").html(data);
       }, complete: poll });
     }, 10000);

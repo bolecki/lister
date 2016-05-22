@@ -252,7 +252,7 @@ def lister(request, list_id):
         depending on ownership and access.
 
         Item data will be populated through ajax
-        calls to the index_part function below.
+        calls to the lister_part function below.
 
         :param list_id: id of the list to display
         :type list_id: string
@@ -304,7 +304,7 @@ def lister(request, list_id):
 
 #TODO rename to lister_part for clarity
 @auth_required
-def part(request, list_id):
+def lister_part(request, list_id):
     '''
         Return up to date item data for the lister page.
 
@@ -395,7 +395,7 @@ def vote(request, list_id, item_id, action):
     else:
         item.save()
 
-    return HttpResponseRedirect(reverse('lists:part', args=(list_id,)))
+    return HttpResponseRedirect(reverse('lists:lister_part', args=(list_id,)))
 
 
 # TODO rename to sort_items for clarity
@@ -438,7 +438,7 @@ def sort(request, list_id, old_index, new_index):
         # Update the item that was moved and temporarily set to 0
         lister.item_set.filter(votes=0).update(votes=new_index+1)
 
-    return HttpResponseRedirect(reverse('lists:part', args=(list_id,)))
+    return HttpResponseRedirect(reverse('lists:lister_part', args=(list_id,)))
 
 
 #TODO rename to delete_lister for clarity
@@ -464,7 +464,7 @@ def clear(request, list_id):
     [x.users.clear() for x in items]
     [x.sessions.clear() for x in items]
 
-    return HttpResponseRedirect(reverse('lists:part', args=(list_id,)))
+    return HttpResponseRedirect(reverse('lists:lister_part', args=(list_id,)))
 
 
 def api(request):

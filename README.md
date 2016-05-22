@@ -67,6 +67,8 @@ rhc env set OPENSHIFT_PYTHON_WSGI_APPLICATION='/var/lib/openshift/xxxxxxxxxxxxxx
 rhc app reload appname
 ```
 
+Add a Postgresql gear at any time with the default settings.py file to have the new database automatically detected!
+
 # TODO
 1. Instructions for Apache/Nginx configuration
 2. Add more api endpoints

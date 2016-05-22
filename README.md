@@ -63,7 +63,7 @@ appname @ http://appname-domain.rhcloud.com/ (uuid: xxxxxxxxxxxxxxxxxxxxxxxx)
 # Set the env variable
 rhc env set OPENSHIFT_PYTHON_WSGI_APPLICATION='/var/lib/openshift/xxxxxxxxxxxxxxxxxxxxxxxx/app-root/repo/lister/lister/wsgi.py' --app appname
 
-# Reload the app - it will complain about an error, but it can be ignored
+# Reload the app
 rhc app reload appname
 ```
 

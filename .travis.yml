@@ -1,0 +1,12 @@
+language: python
+
+python:
+  - "2.7"
+
+before_install:
+  - python  $TRAVIS_BUILD_DIR/.openshift/action_hooks/gen_key.py
+
+install: "pip install -r requirements.txt"
+
+script:
+  - python manage.py test

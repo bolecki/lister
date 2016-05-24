@@ -74,5 +74,5 @@ Add a Postgresql gear at any time with the default settings.py file to have the 
 2. Add more api endpoints
 3. Add more list types
 4. ~~Handle CSRF tokens~~
-5. Add test cases
-6. Add travis CI integration
+5. Add more test cases
+6. ~~Add travis CI integration~~

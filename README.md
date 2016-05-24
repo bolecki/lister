@@ -1,7 +1,9 @@
 # Lister
-- master [![Build Status](https://travis-ci.org/bolecki/lister.svg?branch=master)](https://travis-ci.org/bolecki/lister)
-- development [![Build Status](https://travis-ci.org/bolecki/lister.svg?branch=development)](https://travis-ci.org/bolecki/lister)
-- experimental [![Build Status](https://travis-ci.org/bolecki/lister.svg?branch=experimental)](https://travis-ci.org/bolecki/lister)
+Branch | Build Status
+--- | ---
+master | [![Build Status](https://travis-ci.org/bolecki/lister.svg?branch=master)](https://travis-ci.org/bolecki/lister)
+development | [![Build Status](https://travis-ci.org/bolecki/lister.svg?branch=development)](https://travis-ci.org/bolecki/lister)
+experimental | [![Build Status](https://travis-ci.org/bolecki/lister.svg?branch=experimental)](https://travis-ci.org/bolecki/lister)
 
 ## Info
 This is a self hosted application that is used to create and manage lists.  It uses Python, the Django web framework, and a relational database.  Openshift action hooks and a database example are also provided for easy deployment!

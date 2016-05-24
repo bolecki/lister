@@ -1,3 +1,4 @@
+Django==1.9.5
 djangorestframework
 django-sslserver
 django-ssl-redirect

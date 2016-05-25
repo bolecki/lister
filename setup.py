@@ -17,7 +17,7 @@ setup(
     url='https://github.com/bolecki',
     # GETTING-STARTED: define required django version:
     install_requires=[
-        'Django==1.8.4'
+        'Django==1.9.5'
     ],
     dependency_links=[
         'https://pypi.python.org/simple/django/'

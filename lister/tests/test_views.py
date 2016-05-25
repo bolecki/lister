@@ -39,24 +39,25 @@ class IndexTestCase(TestCase):
 class IndexPartTestCase(TestCase):
     def setUp(self):
         self.factory = RequestFactory()
-        self.user = User.objects.create_user(username="user", password="testpass")
-        Lister.objects.create(list_name="public", public=True, user=self.user)
-        Lister.objects.create(list_name="private", user=self.user)
+        self.public_user = User.objects.create_user(username="public-user", password="testpass")
+        self.private_user = User.objects.create_user(username="private-user", password="testpass")
+        Lister.objects.create(list_name="public", public=True, user=self.public_user)
+        Lister.objects.create(list_name="private", user=self.private_user)
 
     def test_public_index_part(self):
         request = self.factory.get('/lists/index-part/public')
-        request.user = self.user
+        request.user = self.public_user
         response = lists.views.index_part(request, 'public')
 
         self.assertEqual(response.status_code, 200)
-        self.assertInHTML('<div>public<small> - user</small></div>', response.content)
-        self.assertInHTML('<div>private<small></small></div>', response.content, count=0)
+        self.assertInHTML('<small> - public-user</small>', response.content)
+        self.assertInHTML('<small></small>', response.content, count=0)
 
     def test_private_index_part(self):
         request = self.factory.get('/lists/index-part/mylists')
-        request.user = self.user
+        request.user = self.private_user
         response = lists.views.index_part(request, 'mylists')
 
         self.assertEqual(response.status_code, 200)
-        self.assertInHTML('<div>private<small></small></div>', response.content)
-        self.assertInHTML('<div>public<small> - user</small></div>', response.content, count=0)
+        self.assertInHTML('<small></small>', response.content)
+        self.assertInHTML('<small> - public-user</small>', response.content, count=0)

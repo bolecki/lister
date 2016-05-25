@@ -5,4 +5,6 @@ if [ ! -z ${OPENSHIFT_HAPROXY_DIR+x} ]; then
     sed -i 's:option httpchk GET /$:option httpchk GET /lists:g' ${OPENSHIFT_HAPROXY_DIR}conf/haproxy.cfg
 fi
 
+pip install -r ${OPENSHIFT_REPO_DIR}requirements.txt
+
 python ${OPENSHIFT_REPO_DIR}.openshift/action_hooks/gen_key.py

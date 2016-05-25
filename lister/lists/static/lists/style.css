@@ -2,6 +2,10 @@
   display: none;
 }
 
+.invisible {
+  visibility: hidden;
+}
+
 .hyperdiv {
   cursor: pointer;
 }

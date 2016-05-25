@@ -11,9 +11,7 @@
                         <button class="btn btn-xs btn-primary fa fa-arrow-up vote up-vote" onclick="update({{ item.id }}, 'up')" type=submit></button>
                         {% endif %}
                     {% else %}
-                        {% if item.item_text == voted %}
-                            <button class="btn btn-xs btn-danger fa fa-arrow-down vote down-vote" onclick="update({{ item.id }}, 'down')" type=submit></button>
-                        {% endif %}
+                        <button class="btn btn-xs btn-danger fa fa-arrow-down vote down-vote {% if not item.item_text == voted %}invisible{% endif %}" onclick="update({{ item.id }}, 'down')" type="submit"></button>
                     {% endif %}
                     <span title="{{ item.users.all|usernames }}"> {{ item.votes }} {{ item.item_text }}</span>
                 </div>

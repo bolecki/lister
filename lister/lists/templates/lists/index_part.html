@@ -3,7 +3,7 @@
         {% if lists %}
             {% for list in lists %}
                 <div class="list-group-item hyperdiv" onclick="hyperdiv({{ list.id }})">
-                    {{ list.list_name }}<small>{% if not mine %} - {{ list.user.username }}{% endif %}</small>
+                    <div>{{ list.list_name }}<small>{% if not mine %} - {{ list.user.username }}{% endif %}</small></div>
                     {% if mine %}
                     <button class="close" onclick="deleteList({{ list.id }})" type=submit>&times;</button>
                     {% endif %}

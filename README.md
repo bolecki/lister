@@ -56,23 +56,7 @@ nohup python manage.py runsslserver 0.0.0.0:8080 &
 ```
 
 ## Openshift
-To run this application under openshift, simply create a new application with a Django cartridge.  Set the source code to this repository, "https://github.com/bolecki/lister.git", and optionally select scaling.
-
-From the rhc client, set the wsgi app environment variable to point to the Django wsgi.py file.  The full path will depend on the app uuid.  Make sure to replace the appname and uuid in the final command.
-
-```bash
-# Grab the uuid
-rhc domain show | grep uuid
-appname @ http://appname-domain.rhcloud.com/ (uuid: xxxxxxxxxxxxxxxxxxxxxxxx)
-
-# Set the env variable
-rhc env set OPENSHIFT_PYTHON_WSGI_APPLICATION='/var/lib/openshift/xxxxxxxxxxxxxxxxxxxxxxxx/app-root/repo/lister/lister/wsgi.py' --app appname
-
-# Reload the app
-rhc app reload appname
-```
-
-Add a Postgresql gear at any time with the default settings.py file to have the new database automatically detected!
+To run this application under openshift, simply create a new application with a Django cartridge.  Set the source code to this repository, "https://github.com/bolecki/lister.git", and optionally select scaling.  Add a Postgresql gear at any time with the default settings.py file to have the new database automatically detected!
 
 # TODO
 1. Instructions for Apache/Nginx configuration

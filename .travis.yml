@@ -6,7 +6,7 @@ python:
 before_install:
   - python  $TRAVIS_BUILD_DIR/.openshift/action_hooks/gen_key.py
 
-install: "pip install -r requirements.txt"
+install: "pip install -e ."
 
 script:
   - python $TRAVIS_BUILD_DIR/lister/manage.py test $TRAVIS_BUILD_DIR/lister/

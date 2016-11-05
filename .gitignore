@@ -2,3 +2,5 @@ db.sqlite3
 *.pyc
 nohup.out
 secrets.py
+dist
+lister.egg-info

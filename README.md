@@ -33,7 +33,7 @@ SECRET_KEY = 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'
 This step will install the required dependencies.  It is recommended to run these steps and the application from a virtualenv.
 
 ```bash
-pip install -r requirements.txt
+pip install -e .
 ```
 
 ## Configuration

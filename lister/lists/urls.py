@@ -10,6 +10,7 @@ urlpatterns = [
     url(r'^api/$', views.api, name='api'),
     url(r'^login/$', views.login_user, name='login'),
     url(r'^register/$', views.register, name='register'),
+    url(r'^register/(?P<setup>setup)/$', views.register, name='setup'),
     url(r'^logout/$', logout, {'next_page':'/lists'}, name='logout'),
     url(r'^create/$', views.create, name='create'),
     url(r'^(?P<list_id>[0-9]+)/$', views.lister, name='lister'),

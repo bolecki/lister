@@ -27,6 +27,11 @@ def index(request, selection=''):
         List data will be populated through ajax
         calls to the index_part function below.
     '''
+    try:
+        user = User.objects.get(username="Anonymous")
+    except User.DoesNotExist:
+        return HttpResponseRedirect(reverse('lists:setup', args=('setup',)))
+
     login_form = LoginForm()
     list_form = CreateListForm(authenticated=request.user.is_authenticated())
 
@@ -108,16 +113,21 @@ def login_user(request):
     return HttpResponseRedirect(reverse('lists:index'))
 
 
-def register(request):
+def register(request, setup=False):
     '''Register, authenticate, and redirect user to index.'''
     if request.method == 'GET':
-        login_form = LoginForm()
-        context = {'login_form': login_form}
+        login_form = LoginForm(setup=setup)
+        context = {
+            'login_form': login_form,
+            'title': 'Register'
+        }
+        if setup:
+            context['title'] = 'Setup'
 
         return render(request, 'lists/register.html', context)
 
     elif request.method == 'POST':
-        login_form = LoginForm(request.POST)
+        login_form = LoginForm(request.POST, setup=setup)
 
         if login_form.is_valid():
             username = login_form.cleaned_data['user']
@@ -141,7 +151,13 @@ def register(request):
 
         # Invalid form input
         else:
-            context = {'login_form': login_form}
+            context = {
+                'login_form': login_form,
+                'title': 'Register'
+            }
+            if setup:
+                context['title'] = 'Setup'
+
             return render(request, 'lists/register.html', context)
 
     return HttpResponseRedirect(reverse('lists:index'))

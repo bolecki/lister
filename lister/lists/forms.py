@@ -28,8 +28,12 @@ class LoginForm(forms.Form):
 
     def __init__(self, *args, **kwargs):
         login_attempt = kwargs.pop('login_attempt', None)
+        setup = kwargs.pop('setup', False)
 
         super(LoginForm, self).__init__(*args, **kwargs)
+        if setup:
+            self.fields['user'].widget.attrs['value'] = 'Anonymous'
+            self.fields['user'].widget.attrs['readonly'] = True
         if login_attempt:
             self.fields['user'].widget.attrs['value'] = login_attempt
 

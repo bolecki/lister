@@ -18,6 +18,7 @@ class TestUser(object):
 class IndexTestCase(TestCase):
     def setUp(self):
         self.factory = RequestFactory()
+        self.public_user = User.objects.create_user(username="Anonymous", password="testpass")
 
     def test_authenticated_index(self):
         request = self.factory.get('/lists')
@@ -39,6 +40,7 @@ class IndexTestCase(TestCase):
 class IndexPartTestCase(TestCase):
     def setUp(self):
         self.factory = RequestFactory()
+        self.public_user = User.objects.create_user(username="Anonymous", password="testpass")
         self.public_user = User.objects.create_user(username="public-user", password="testpass")
         self.private_user = User.objects.create_user(username="private-user", password="testpass")
         Lister.objects.create(list_name="public", public=True, user=self.public_user)

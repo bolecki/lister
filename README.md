@@ -48,10 +48,7 @@ Change the listening ip and port as needed, ie 127.0.0.1:80.
 # Change directory to the Django project
 cd lister
 
-# Run HTTP server
-nohup python manage.py runserver 0.0.0.0:8080 &
-
-# Alternatively, run HTTPS server instead
+# Run HTTPS server
 nohup python manage.py runsslserver 0.0.0.0:8080 &
 ```
 
